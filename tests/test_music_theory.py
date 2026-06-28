@@ -208,7 +208,23 @@ def test_open_voicing_randomizes_registers_while_skipping_a_chord_member():
     assert len(rendered_voicings) > 1
     assert all(ChordTools.skips_chord_member(voicing, root_position) for voicing in voicings)
     assert all(voicing[-1].semitone_number - voicing[0].semitone_number > 12 for voicing in voicings)
+    assert all(voicing[1].semitone_number - voicing[0].semitone_number <= 12 for voicing in voicings)
     assert all(max(note.octave for note in voicing) <= 7 for voicing in voicings)
+
+
+def test_four_note_open_voicing_fallback_keeps_first_gap_within_octave(monkeypatch):
+    root_position = [
+        Note("C", 0, 4),
+        Note("E", 0, 4),
+        Note("G", 0, 4),
+        Note("B", 0, 4),
+    ]
+    monkeypatch.setattr(random, "randint", lambda lower, upper: upper)
+
+    voicing = ChordTools.open_voicing(root_position)
+
+    assert voicing[1].semitone_number - voicing[0].semitone_number <= 12
+    assert voicing[-1].semitone_number - voicing[0].semitone_number > 12
 
 
 def test_scale_build_and_relation_labels():
@@ -331,6 +347,8 @@ def test_answer_normalizer_accepts_music_answer_variants():
     assert AnswerNormalizer.text("first inversion6/3") != AnswerNormalizer.text("first inversion 6")
     assert AnswerNormalizer.text("closed voicing") == AnswerNormalizer.text("close voicing")
     assert AnswerNormalizer.text("open position") == AnswerNormalizer.text("open voicing")
+    assert AnswerNormalizer.roman("#iv°64") == AnswerNormalizer.roman("viio64/V")
+    assert AnswerNormalizer.roman("V2/bVII") == AnswerNormalizer.roman("V42/VII")
 
 
 def test_answer_normalizer_accepts_roman_and_note_sequence_variants():

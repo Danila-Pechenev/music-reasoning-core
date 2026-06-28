@@ -715,6 +715,7 @@ class AnswerNormalizer:
             "open position": "open voicing",
             "first inversion 6/3": "first inversion 6",
             "third inversion 2": "third inversion 4/2",
+            "third inversion 6/4/2": "third inversion 4/2",
         }
         return aliases.get(text, text)
 
@@ -760,7 +761,14 @@ class AnswerNormalizer:
             .replace("°", "o")
             .replace("º", "o")
         )
-        return re.sub(r"(?<=\d)/(?=\d)", "", text)
+        text = re.sub(r"(?<=\d)/(?=\d)", "", text)
+        text = re.sub(r"^([#b]*[ivIV]+(?:/o|o)?)2(?=/|$)", r"\g<1>42", text)
+        text = re.sub(r"/bVII$", "/VII", text)
+        chromatic_dominant = re.fullmatch(r"#ivo(7|65|43|42|64|6)?", text)
+        if chromatic_dominant:
+            suffix = chromatic_dominant.group(1) or ""
+            return f"viio{suffix}/V"
+        return text
 
     @staticmethod
     def note_sequence(text: object, answer_notation: str | None = None) -> tuple[str, ...]:
@@ -1234,7 +1242,15 @@ class ChordTools:
                 voiced_notes.append(Note(note.letter, note.accidental, octave))
             voiced_notes.sort(key=lambda note: note.semitone_number)
             span = voiced_notes[-1].semitone_number - voiced_notes[0].semitone_number
-            if span > 12 and ChordTools.skips_chord_member(voiced_notes, root_position):
+            bass_gap_is_unambiguous = (
+                len(root_position) != 4
+                or voiced_notes[1].semitone_number - voiced_notes[0].semitone_number <= 12
+            )
+            if (
+                span > 12
+                and bass_gap_is_unambiguous
+                and ChordTools.skips_chord_member(voiced_notes, root_position)
+            ):
                 return voiced_notes
 
         if len(root_position) == 3:
@@ -1245,11 +1261,26 @@ class ChordTools:
                 Note(third.letter, third.accidental, root_octave + 2),
             ]
         root, third, fifth, seventh = root_position
+        third_octave = (
+            third.octave
+            if third.octave is not None
+            else root_octave + int(third.step < root_step)
+        )
+        fifth_octave = (
+            fifth.octave
+            if fifth.octave is not None
+            else root_octave + int(fifth.step < root_step)
+        )
+        seventh_octave = (
+            seventh.octave
+            if seventh.octave is not None
+            else root_octave + int(seventh.step < root_step)
+        )
         return [
             Note(root.letter, root.accidental, root_octave),
-            Note(fifth.letter, fifth.accidental, root_octave + 1),
-            Note(third.letter, third.accidental, root_octave + 2),
-            Note(seventh.letter, seventh.accidental, root_octave + 3),
+            Note(third.letter, third.accidental, third_octave),
+            Note(fifth.letter, fifth.accidental, fifth_octave + 1),
+            Note(seventh.letter, seventh.accidental, seventh_octave + 1),
         ]
 
     @staticmethod

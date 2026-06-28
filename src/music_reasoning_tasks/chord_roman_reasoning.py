@@ -173,16 +173,16 @@ ROMAN_FROM_ORDERED_OPENERS = (
     "Find the compact Roman numeral for {chord} in {key}.",
 )
 SECONDARY_ROMAN_FROM_COLLECTION_OPENERS = (
-    "In {key}, analyze the source chord-tone collection {chord}, with {bass} in the bass; it resolves to {resolution}.",
-    "Give the Roman numeral for the first chord-tone collection in {key}: {chord}, over bass {bass}, resolving to {resolution}.",
-    "In {key}, identify the Roman numeral of the source chord tones {chord} over bass {bass}; the resolution chord is {resolution}.",
-    "Analyze {chord} as source chord tones over bass {bass} in {key}, using {resolution} as the resolution chord.",
+    "In {key}, analyze {chord}, with {bass} in the bass, as an applied chord tonicizing the supplied resolution chord: {resolution}.",
+    "In {key}, {chord}, over bass {bass}, functions as an applied chord that tonicizes the supplied resolution chord: {resolution}. Give its Roman numeral.",
+    "Treat {chord}, with {bass} in the bass, as an applied chord in {key} that tonicizes the supplied resolution chord: {resolution}. Identify its Roman numeral.",
+    "Analyze {chord} over bass {bass} as an applied chord in {key} that tonicizes the supplied resolution chord: {resolution}.",
 )
 SECONDARY_ROMAN_FROM_ORDERED_OPENERS = (
-    "In {key}, analyze the source chord {chord}; it resolves to {resolution}.",
-    "Give the Roman numeral for the first chord in {key}: {chord}, resolving to {resolution}.",
-    "In {key}, identify the Roman numeral of the source chord {chord}; the resolution chord is {resolution}.",
-    "Analyze the source chord {chord} in {key}, using {resolution} as its resolution chord.",
+    "In {key}, analyze {chord} as an applied chord tonicizing the supplied resolution chord: {resolution}.",
+    "In {key}, {chord} functions as an applied chord that tonicizes the supplied resolution chord: {resolution}. Give its Roman numeral.",
+    "Treat {chord} as an applied chord in {key} that tonicizes the supplied resolution chord: {resolution}. Identify its Roman numeral.",
+    "Analyze {chord} as an applied chord in {key} that tonicizes the supplied resolution chord: {resolution}.",
 )
 ROMAN_TAILS = (
     "Answer format: one compact Roman numeral with figured-bass digits closed up, for example, V65/V.",
@@ -532,7 +532,7 @@ class ChordRomanReasoning(Task):
             f"The voiced chord is {rendered.cot_text}, {TextFormatter.article(quality)}.",
             f"The outer notes span {TextFormatter.count_phrase(span)}.",
             (
-                "The chord tones fit within one octave without skipping a chord member between adjacent upper notes."
+                "The chord tones fit within one octave without skipping a chord member between adjacent voices."
                 if use_close
                 else "At least one adjacent pair skips over another chord member, so the voicing is open."
             ),

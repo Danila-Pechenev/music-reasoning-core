@@ -26,6 +26,8 @@ from music_reasoning_tasks.chord_roman_reasoning import (
     ROMAN_MAJOR_SECONDARY_TRIADS,
     ROMAN_MINOR_SECONDARY_SEVENTHS,
     ROMAN_MINOR_SECONDARY_TRIADS,
+    SECONDARY_ROMAN_FROM_COLLECTION_OPENERS,
+    SECONDARY_ROMAN_FROM_ORDERED_OPENERS,
     ChordRomanConfig,
     ChordRomanReasoning,
 )
@@ -142,6 +144,7 @@ def test_full_abc_chord_prompts_do_not_duplicate_chord_phrases():
         "the chord the chord",
         "chord tones the chord",
         "chord-tone collection the chord",
+        "source chord tones the chord",
         "the chromatic chord the chord",
         "written chords the chord",
     ]
@@ -317,6 +320,8 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
     assert task.score_answer("vii/o65", _problem("viiø65", answer_kind="roman")) == 1.0
     assert task.score_answer("vii°7/V", _problem("viio7/V", answer_kind="roman")) == 1.0
     assert task.score_answer("V6/5/V", _problem("V65/V", answer_kind="roman")) == 1.0
+    assert task.score_answer("#iv°64", _problem("viio64/V", answer_kind="roman")) == 1.0
+    assert task.score_answer("V2/bVII", _problem("V42/VII", answer_kind="roman")) == 1.0
     assert task.score_answer("C# - E - G", _problem("C#-E-G", answer_kind="note_sequence")) == 1.0
     assert (
         task.score_answer(
@@ -330,6 +335,9 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
     assert task.score_answer("half diminished seventh", _problem("half-diminished seventh", answer_kind="label")) == 1.0
     assert task.score_answer("third inversion, 4/2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
     assert task.score_answer("third inversion 2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
+    expected_inversion = _problem("third inversion 4/2", answer_kind="text")
+    assert task.score_answer("third inversion 6/4/2", expected_inversion) == 1.0
+    assert task.score_answer("thirdinversion 6/4/2", expected_inversion) == 0.0
     assert task.score_answer("first inversion 6/3", _problem("first inversion 6", answer_kind="text")) == 1.0
     assert task.score_answer("firstinversion 6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
     assert task.score_answer("first inversion6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
@@ -340,6 +348,23 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
 def test_enharmonic_openers_use_clear_pitch_class_wording():
     assert not any("sound as the same pitch-class set" in opener for opener in ENHARMONIC_OPENERS)
     assert any("represent the same pitch-class set" in opener for opener in ENHARMONIC_OPENERS)
+
+
+def test_secondary_roman_openers_are_clear_for_full_abc_chord_references():
+    openers = SECONDARY_ROMAN_FROM_COLLECTION_OPENERS + SECONDARY_ROMAN_FROM_ORDERED_OPENERS
+
+    for opener in openers:
+        prompt = opener.format(
+            key="G minor",
+            chord="the chord in the source ABC score fragment",
+            bass='"=D"',
+            resolution="the chord in the resolution ABC score fragment",
+        )
+
+        assert "applied chord" in prompt
+        assert "toniciz" in prompt
+        assert "resolution chord" in prompt
+        assert "source chord tones the chord" not in prompt
 
 
 def test_roman_figure_sampling_uses_mode_specific_diatonic_pools(monkeypatch):
@@ -475,9 +500,11 @@ def test_secondary_roman_analysis_includes_resolution_context(monkeypatch):
     example = task._generate_roman_numeral_from_chord()
 
     assert example.answer == "V43/VII"
-    assert "resolv" in example.metadata.prompt.lower()
+    assert "resolution chord" in example.metadata.prompt.lower()
     assert example.metadata.resolution_roman_figure == "VII"
     assert _pitch_classes(example.metadata.resolution_chord_notes) == {2, 6, 9}
+    assert "applied chord" in example.metadata.prompt
+    assert "toniciz" in example.metadata.prompt
     assert "The resolution chord stacks as" in example.metadata.cot
     assert "identifying it as VII in E minor" in example.metadata.cot
 
