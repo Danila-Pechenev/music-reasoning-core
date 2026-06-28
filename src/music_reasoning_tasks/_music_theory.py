@@ -698,14 +698,26 @@ class AnswerNormalizer:
     @staticmethod
     def text(text: object) -> str:
         """Normalize general text answers for exact symbolic comparison."""
-        text = AnswerNormalizer.normalize_text(text).lower()
+        text = AnswerNormalizer.normalize_text(text)
+        quote_pairs = (("\"", "\""), ("'", "'"), ("“", "”"), ("‘", "’"))
+        for opening_quote, closing_quote in quote_pairs:
+            if (
+                len(text) >= 2
+                and text.startswith(opening_quote)
+                and text.endswith(closing_quote)
+            ):
+                text = text[1:-1].strip().rstrip(".")
+                break
+        text = text.lower()
         text = re.sub(r"[,;:]", " ", text)
         text = " ".join(text.replace("-", " ").split())
+        text = re.sub(r"^(?:a|an)\s+", "", text)
         aliases = {
             "closed voicing": "close voicing",
             "closed position": "close voicing",
             "close position": "close voicing",
             "open position": "open voicing",
+            "root position 7/5/3": "root position 7",
             "first inversion 6/3": "first inversion 6",
             "third inversion 2": "third inversion 4/2",
             "third inversion 6/4/2": "third inversion 4/2",
@@ -737,7 +749,21 @@ class AnswerNormalizer:
         if len(text) >= 2 and text[0] == text[-1] and text[0] in {"'", '"', "`"}:
             text = text[1:-1]
         if type(answer_notation) == str and "ABC" in answer_notation:
-            return re.sub(r"^=([A-Ga-g][,']*)$", r"\1", text)
+            match = re.fullmatch(r"(\^\^|__|\^|_|=)?([A-Ga-g])([,']*)", text)
+            if not match:
+                return text.lower()
+            accidental_token, letter, octave_marks = match.groups()
+            if "," in octave_marks and "'" in octave_marks:
+                return text.lower()
+            accidental = {"^^": 2, "^": 1, "__": -2, "_": -1, "=": 0, None: 0}[
+                accidental_token
+            ]
+            octave = (
+                (5 if letter.islower() else 4)
+                + octave_marks.count("'")
+                - octave_marks.count(",")
+            )
+            return ABCContext.compact_note(Note(letter.upper(), accidental, octave))
 
         m = re.fullmatch(r"([A-Ga-g])((?:bb)|(?:##)|b|#)?(-?\d+)?", text)
         if not m:
@@ -750,11 +776,23 @@ class AnswerNormalizer:
         """Normalize compact Roman-numeral answers without changing case semantics."""
         text = (
             "".join(AnswerNormalizer.normalize_text(text).split())
+            .translate(
+                str.maketrans(
+                    "⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉",
+                    "01234567890123456789",
+                )
+            )
             .replace("ø", "/o")
             .replace("°", "o")
             .replace("º", "o")
         )
         text = re.sub(r"(?<=\d)/(?=\d)", "", text)
+        root_position_triad = re.fullmatch(
+            r"([#b]*[ivIV]+(?:/o|o|\+)?)53(/[#b]*[ivIV]+)?",
+            text,
+        )
+        if root_position_triad:
+            text = f"{root_position_triad.group(1)}{root_position_triad.group(2) or ''}"
         text = re.sub(r"^([#b]*[ivIV]+(?:/o|o)?)2(?=/|$)", r"\g<1>42", text)
         text = re.sub(r"/bVII$", "/VII", text)
         chromatic_dominant = re.fullmatch(r"#ivo(7|65|43|42|64|6)?", text)

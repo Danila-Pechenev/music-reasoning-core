@@ -186,6 +186,12 @@ def test_chromatic_chord_labels_match_music21_roman_spellings():
     random.seed(4100)
     task = ChordRomanReasoning(ChordRomanConfig(mode="chromatic_chord_label"))
     known_figures = {label: figure for label, figure in CHROMATIC_CHORDS}
+    assert set(known_figures) == {
+        "Neapolitan sixth",
+        "Italian augmented sixth",
+        "French augmented sixth",
+        "German augmented sixth",
+    }
     seen_modes = set()
     seen_octave_settings = set()
 
@@ -322,6 +328,8 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
     assert task.score_answer("V6/5/V", _problem("V65/V", answer_kind="roman")) == 1.0
     assert task.score_answer("#iv°64", _problem("viio64/V", answer_kind="roman")) == 1.0
     assert task.score_answer("V2/bVII", _problem("V42/VII", answer_kind="roman")) == 1.0
+    assert task.score_answer("iii⁴₃", _problem("iii43", answer_kind="roman")) == 1.0
+    assert task.score_answer("III53", _problem("III", answer_kind="roman")) == 1.0
     assert task.score_answer("C# - E - G", _problem("C#-E-G", answer_kind="note_sequence")) == 1.0
     assert (
         task.score_answer(
@@ -331,7 +339,14 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
         == 1.0
     )
     assert task.score_answer("yes", _problem("yes", answer_kind="yes_no")) == 1.0
+    assert task.score_answer("'no'", _problem("no", answer_kind="yes_no")) == 1.0
+    assert task.score_answer('"yes"', _problem("yes", answer_kind="yes_no")) == 1.0
     assert task.score_answer("major   triad.", _problem("major triad", answer_kind="label")) == 1.0
+    assert task.score_answer("a major triad.", _problem("major triad", answer_kind="label")) == 1.0
+    assert task.score_answer(
+        '"augmented-major seventh"',
+        _problem("augmented-major seventh", answer_kind="label"),
+    ) == 1.0
     assert task.score_answer("half diminished seventh", _problem("half-diminished seventh", answer_kind="label")) == 1.0
     assert task.score_answer("third inversion, 4/2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
     assert task.score_answer("third inversion 2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
@@ -339,6 +354,7 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
     assert task.score_answer("third inversion 6/4/2", expected_inversion) == 1.0
     assert task.score_answer("thirdinversion 6/4/2", expected_inversion) == 0.0
     assert task.score_answer("first inversion 6/3", _problem("first inversion 6", answer_kind="text")) == 1.0
+    assert task.score_answer("root position 7/5/3", _problem("root position 7", answer_kind="text")) == 1.0
     assert task.score_answer("firstinversion 6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
     assert task.score_answer("first inversion6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
     assert task.score_answer("closed voicing", _problem("close voicing", answer_kind="text")) == 1.0

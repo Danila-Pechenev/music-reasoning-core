@@ -328,9 +328,11 @@ def test_abc_interval_score_requires_number_for_octave_less_interval():
 def test_answer_normalizer_accepts_music_answer_variants():
     assert AnswerNormalizer.interval("double augmented eleventh.") == AnswerNormalizer.interval("double-augmented eleventh")
     assert AnswerNormalizer.interval("doubly augmented eleventh.") == AnswerNormalizer.interval("double-augmented eleventh")
+    assert AnswerNormalizer.interval("an augmented fifth.") == AnswerNormalizer.interval("augmented fifth")
     assert AnswerNormalizer.interval("doubly-diminished seventh") == AnswerNormalizer.interval("double diminished seventh")
     assert AnswerNormalizer.interval("Augmented 19th") == AnswerNormalizer.interval("augmented nineteenth")
     assert AnswerNormalizer.interval("Perfect eleventh (P11)") == AnswerNormalizer.interval("perfect eleventh")
+    assert AnswerNormalizer.interval("P8") != AnswerNormalizer.interval("perfect octave")
     assert AnswerNormalizer.interval("major third (M3)") == AnswerNormalizer.interval("major third")
     assert AnswerNormalizer.interval("minor third (m3)") == AnswerNormalizer.interval("minor third")
     assert AnswerNormalizer.interval("double-augmented fourth (AA4)") == AnswerNormalizer.interval("double-augmented fourth")
@@ -340,7 +342,15 @@ def test_answer_normalizer_accepts_music_answer_variants():
     assert AnswerNormalizer.note("B♮4") == "B4"
     assert AnswerNormalizer.note('"=B"', "compact ABC notation") == "B"
     assert AnswerNormalizer.note("B", "compact ABC notation") == "B"
+    assert AnswerNormalizer.note("__D'", "compact ABC notation") == AnswerNormalizer.note(
+        "__d", "compact ABC notation"
+    )
     assert AnswerNormalizer.text("half diminished seventh") == AnswerNormalizer.text("half-diminished seventh")
+    assert AnswerNormalizer.text("a minor triad") == AnswerNormalizer.text("minor triad")
+    assert AnswerNormalizer.text("'no'") == "no"
+    assert AnswerNormalizer.text('"yes"') == "yes"
+    assert AnswerNormalizer.text('"augmented-major seventh"') == AnswerNormalizer.text("augmented-major seventh")
+    assert AnswerNormalizer.text("root position 7/5/3") == AnswerNormalizer.text("root position 7")
     assert AnswerNormalizer.text("third inversion, 4/2") == AnswerNormalizer.text("third inversion 4/2")
     assert AnswerNormalizer.text("first inversion 6/3") == AnswerNormalizer.text("first inversion 6")
     assert AnswerNormalizer.text("firstinversion 6/3") != AnswerNormalizer.text("first inversion 6")
@@ -349,6 +359,10 @@ def test_answer_normalizer_accepts_music_answer_variants():
     assert AnswerNormalizer.text("open position") == AnswerNormalizer.text("open voicing")
     assert AnswerNormalizer.roman("#iv°64") == AnswerNormalizer.roman("viio64/V")
     assert AnswerNormalizer.roman("V2/bVII") == AnswerNormalizer.roman("V42/VII")
+    assert AnswerNormalizer.roman("iii⁴₃") == AnswerNormalizer.roman("iii43")
+    assert AnswerNormalizer.roman("III53") == AnswerNormalizer.roman("III")
+    assert AnswerNormalizer.roman("V53/V") == AnswerNormalizer.roman("V/V")
+    assert AnswerNormalizer.roman("V653") == "V653"
 
 
 def test_answer_normalizer_accepts_roman_and_note_sequence_variants():

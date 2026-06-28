@@ -125,11 +125,15 @@ such as `=F`.
 Scoring normalizes harmless surface variants while preserving musically
 relevant spelling. It accepts common accidental words such as `E-flat`, optional
 quotes around ABC note answers, `=B` and `B` as equivalent ABC natural-note
-answers, final periods, whitespace variants, and conventional Roman-numeral
-aliases such as `V2/bVII` for `V42/VII` and `#iv°64` for `vii°64/V`. It does
-also accepts `third inversion 6/4/2` for `third inversion 4/2`, while still
-requiring spaces between words. It does not treat `C#` and `Db` as equal unless
-the task itself asks for enharmonic equivalence.
+answers, final periods, whitespace variants, optional surrounding quotes,
+optional leading articles such as `a` or `an`, and conventional Roman-numeral
+aliases such as `V2/bVII` for `V42/VII` and `#iv°64` for `vii°64/V`. It also
+accepts equivalent compact ABC octave spellings such as `__D'` and `__d`,
+Unicode figured-bass digits such as `iii⁴₃` for `iii43`, explicit root-position
+triad figures such as `III53` for `III`, `root position 7/5/3` for
+`root position 7`, and `third inversion 6/4/2` for `third inversion 4/2`, while
+still requiring spaces between words. It does not treat `C#` and `Db` as equal
+unless the task itself asks for enharmonic equivalence.
 
 Reasoning traces should read as natural music-theory reasoning. They may be
 generated using internal tools or third-party libraries, but they should not
@@ -170,8 +174,8 @@ These families are ordered for implementation: start with compact, strongly veri
 
 | Mode | Prompt example | Answer |
 |---|---|---|
-| `interval_naming` | `Name the interval from F#3 to A4. Notes are written in scientific pitch notation. The answer is one interval name, including compound/simple size as written.` | `minor tenth` |
-| `interval_arithmetic` | `Start with a major tenth, then reduce to a simple interval and invert it, then add a minor third. Answer with one interval name for the final result. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.` | `major seventh` |
+| `interval_naming` | `Name the interval from F#3 to A4. Notes are written in scientific pitch notation. Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.` | `minor tenth` |
+| `interval_arithmetic` | `Start with a major tenth, then reduce to a simple interval and invert it, then add a minor third. Answer with one interval name for the final result, for example, minor third or double-diminished seventh. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.` | `major seventh` |
 | `pitch_count` | `Under pitch-class equivalence, how many distinct pitch classes are in C4, C5, B#3, Db4, C#5, Ebb4? Notes are written in scientific pitch notation. The answer is one integer.` | `3` |
 | `interval_classification` | `In C harmonic minor, classify the ascending note-to-note relation Eb-B using one of these labels: diatonic consonance, diatonic dissonance, chromatic alteration. The answer is one label from that list.` | `diatonic dissonance` |
 | `interval_size_comparison` | `Are C4-F#4 and D4-Ab4 interval-size equivalent, meaning that they span the same number of semitones? Notes are written in scientific pitch notation. The answer is exactly 'yes' or 'no'.` | `yes` |
@@ -256,7 +260,7 @@ tests for independent cross-checks of pitch and interval behavior.
 | `inversion` | `Treat the chord in this ABC score fragment:\nL:1/16\nM:4/4\nK:Eb\n  [^A=BD^F] |] %1 as the chord tones and "^F" as the bass note. Interpret the ABC score using its key signature. The answer is one inversion label followed by figured bass.` | `second inversion 4/3` |
 | `open_close_voicing` | `Classify the voicing "C"-"G"-"e". Notes are written in compact ABC notation. Choose from: close voicing, open voicing. The answer is one label from that list.` | `open voicing` |
 | `enharmonic_chord_equivalence` | `Compare "C"-"^E"-"G"-"B" and "^B"-"F"-"__A"-"_C": are they enharmonically equivalent pitch-class chords? Notes are written in compact ABC notation. Answer exactly 'yes' or 'no'.` | `yes` |
-| `chromatic_chord_label` | `In C major, what chromatic label fits C-Ab-F# over Ab? Select exactly one label from this list: French augmented sixth, Italian augmented sixth, German augmented sixth, Swiss augmented sixth, Neapolitan sixth.` | `Italian augmented sixth` |
+| `chromatic_chord_label` | `In C major, what chromatic label fits C-Ab-F# over Ab? Select exactly one label from this list: French augmented sixth, Italian augmented sixth, German augmented sixth, Neapolitan sixth.` | `Italian augmented sixth` |
 | `chord_membership` | `Do all tones of Cb-F-Ab belong to Eb natural minor? Judge membership by written note spelling; enharmonic substitutes are distinct. Give one answer, either 'yes' or 'no'.` | `yes` |
 | `roman_numeral_from_chord` | `In E minor, analyze the source chord E-G-A-C# over bass E; it resolves to D-F#-A. Answer with one compact Roman numeral and closed-up figured bass.` | `V43/VII` |
 | `chord_from_roman_numeral` | `Which chord tones does vi43 produce in D minor? The expected answer is a hyphen-separated bass-upward sequence of note names without octave numbers or markers in compact ABC notation, with any accidental made explicit, for example, ^C-=E-G. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.` | `^F-=A-=B-=D` |

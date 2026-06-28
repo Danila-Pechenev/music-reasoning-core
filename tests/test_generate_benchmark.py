@@ -82,7 +82,7 @@ def test_generate_benchmark_writes_nested_hugging_face_configurations(tmp_path, 
     assert "task_categories:\n- question-answering" in dataset_card
     assert "- config_name: n1\n  default: true" in dataset_card
     assert "path: data/n2/easy.jsonl" in dataset_card
-    assert '"n1",\n    revision="v0.4.0"' in dataset_card
+    assert '"n1",\n    revision="v0.4.2"' in dataset_card
 
 
 def test_generate_benchmark_removes_stale_data_files(tmp_path, monkeypatch):

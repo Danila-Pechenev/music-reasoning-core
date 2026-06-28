@@ -64,14 +64,12 @@ CHROMATIC_CHORDS = (
     ("Italian augmented sixth", "It6"),
     ("French augmented sixth", "Fr43"),
     ("German augmented sixth", "Ger65"),
-    ("Swiss augmented sixth", "Sw43"),
 )
 CHROMATIC_SCALE_DEGREE_FORMULAS = {
     "Neapolitan sixth": "4-b6-b2",
     "Italian augmented sixth": "b6-1-#4",
     "French augmented sixth": "b6-1-2-#4",
     "German augmented sixth": "b6-1-b3-#4",
-    "Swiss augmented sixth": "b6-1-#2-#4",
 }
 MODE_NAMES = (
     "chord_quality",

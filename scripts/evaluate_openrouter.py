@@ -149,27 +149,27 @@ def _load_jsonl(path: Path) -> list[dict[str, Any]]:
 def _load_benchmark(
     dataset_repo: str,
     dataset_config: str,
-    dataset_revision: str,
+    dataset_commit: str,
     splits: Sequence[str],
     limit_per_split: int | None,
 ) -> list[dict[str, Any]]:
-    """Download one benchmark configuration from a pinned dataset revision."""
+    """Download one benchmark configuration from an exact dataset commit."""
     from datasets import load_dataset
 
     rows: list[dict[str, Any]] = []
     seen_ids: set[str] = set()
     try:
-        benchmark = load_dataset(dataset_repo, dataset_config, revision=dataset_revision)
+        benchmark = load_dataset(dataset_repo, dataset_config, revision=dataset_commit)
     except Exception as exc:
         raise EvaluationError(
             f"Could not load configuration {dataset_config!r} from {dataset_repo!r} "
-            f"at revision {dataset_revision!r}: {exc}"
+            f"at commit {dataset_commit!r}: {exc}"
         ) from exc
     for split in splits:
         if split not in benchmark:
             available = ", ".join(sorted(benchmark))
             raise EvaluationError(
-                f"Dataset split {split!r} does not exist at revision {dataset_revision!r}. "
+                f"Dataset split {split!r} does not exist at commit {dataset_commit!r}. "
                 f"Available splits: {available}."
             )
         dataset = benchmark[split]
@@ -995,7 +995,7 @@ def main() -> None:
     benchmark_rows = _load_benchmark(
         args.dataset_repo,
         args.dataset_config,
-        dataset_revision,
+        dataset_commit,
         args.splits,
         args.limit_per_split,
     )

@@ -202,27 +202,27 @@ The pitch-class sets differ, so the answer is no.
 TASK 13 | mode=chromatic_chord_label | style=full_abc_score | with_octave=True
 --------------------------------------------------------------------------------
 PROMPT:
-In the key of D# minor, classify the chord in this ABC score fragment:
-L:1/16
-M:12/8
-K:Ab
-  [=B^d^^e^^g] |] %1. Interpret the score using its key signature. Select exactly one label from this list: Italian augmented sixth, German augmented sixth, French augmented sixth, Neapolitan sixth, Swiss augmented sixth.
+For G minor, choose the label for the chord in this ABC score fragment:
+L:1/8
+M:2/4
+K:Gm
+  [ega^c']2 |] %1. Interpret the score using its key signature. The expected answer is exactly one of these labels: French augmented sixth, German augmented sixth, Italian augmented sixth, Neapolitan sixth.
 
 ANSWER:
-Swiss augmented sixth
+French augmented sixth
 
 COT:
-The score note "=B" explicitly marks B natural, overriding K:Ab, so it represents "=B".
-The score note "^d" explicitly marks D sharp, overriding K:Ab, so it represents "^d".
-The score note "^^e" explicitly marks E double sharp, overriding K:Ab, so it represents "^^e".
-The score note "^^g" explicitly marks G double sharp, so it represents "^^g".
-Relative to tonic D#, the scale-degree formula is b6-1-#2-#4.
-The formula b6-1-#2-#4 identifies a Swiss augmented sixth.
+The key signature K:Gm makes E flat, so the score note "e" represents "_e".
+In K:Gm, G has no key-signature accidental, so the score note "g" represents "=g".
+In K:Gm, A has no key-signature accidental, so the score note "a" represents "=a".
+The score note "^c'" explicitly marks C sharp, so it represents "^c'".
+Relative to tonic G, the scale-degree formula is b6-1-2-#4.
+The formula b6-1-2-#4 identifies a French augmented sixth.
 
 TASK 14 | mode=chromatic_chord_label | style=compact_abc | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-For Db major, choose the label for "G"-"__B"-"_D" as a chord-tone collection with bass "__B". Notes are written in compact ABC notation. The answer is exactly one of these labels: Neapolitan sixth, Italian augmented sixth, Swiss augmented sixth, German augmented sixth, French augmented sixth.
+For Db major, choose the label for "G"-"__B"-"_D" as a chord-tone collection with bass "__B". Notes are written in compact ABC notation. The answer is exactly one of these labels: Neapolitan sixth, Italian augmented sixth, German augmented sixth, French augmented sixth.
 
 ANSWER:
 Italian augmented sixth
@@ -235,7 +235,7 @@ The formula b6-1-#4 identifies an Italian augmented sixth.
 TASK 15 | mode=chromatic_chord_label | style=spn | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-In Cb major, what chromatic label fits F-Abb-Cb-Ebb as a chord-tone collection with bass Abb? Notes are written in scientific pitch notation. The answer is exactly one of these labels: Neapolitan sixth, French augmented sixth, Swiss augmented sixth, Italian augmented sixth, German augmented sixth.
+In Cb major, what chromatic label fits F-Abb-Cb-Ebb as a chord-tone collection with bass Abb? Notes are written in scientific pitch notation. The answer is exactly one of these labels: Neapolitan sixth, French augmented sixth, Italian augmented sixth, German augmented sixth.
 
 ANSWER:
 German augmented sixth

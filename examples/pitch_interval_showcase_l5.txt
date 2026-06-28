@@ -9,7 +9,7 @@ L:1/4
 M:none
 K:Ab
   [^^B=e']1 |] %1
-Interpret the score using its key signature. Give one interval name, preserving the written interval number rather than reducing compound intervals to simple ones.
+Interpret the score using its key signature. Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones.
 
 ANSWER:
 double-diminished eleventh
@@ -26,7 +26,7 @@ So the interval is a double-diminished eleventh.
 TASK 02 | mode=interval_naming | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Identify the interval from "f" up to "^^e''". Notes are written in compact ABC notation. Answer with one interval name, preserving the written simple or compound interval number.
+Identify the interval from "f" up to "^^e''". Notes are written in compact ABC notation. Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number.
 
 ANSWER:
 double-augmented fourteenth
@@ -41,7 +41,7 @@ So the interval is a double-augmented fourteenth.
 TASK 03 | mode=interval_naming | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-Name the ascending interval whose endpoints are A3 and Gbb5. Notes are written in scientific pitch notation. Provide one interval name, using the simple or compound number shown by the written notes.
+Name the ascending interval whose endpoints are A3 and Gbb5. Notes are written in scientific pitch notation. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes.
 
 ANSWER:
 double-diminished fourteenth
@@ -56,7 +56,7 @@ So the interval is a double-diminished fourteenth.
 TASK 04 | mode=interval_arithmetic
 --------------------------------------------------------------------------------
 PROMPT:
-Start with a double-diminished twelfth, then reduce to a simple interval and invert it, then add a perfect twelfth, then subtract an augmented sixth, then subtract a double-augmented seventh. The expected answer is one interval name for the final result.
+Start with a double-diminished twelfth, then reduce to a simple interval and invert it, then add a perfect twelfth, then subtract an augmented sixth, then subtract a double-augmented seventh. The expected answer is one interval name for the final result, for example, augmented fifth or perfect eleventh.
 
 ANSWER:
 double-diminished fourth
@@ -74,7 +74,7 @@ With interval number 4 and 3 semitones, the resulting interval is a double-dimin
 TASK 05 | mode=interval_arithmetic
 --------------------------------------------------------------------------------
 PROMPT:
-Start with a diminished fourth, then subtract a double-diminished fourth, then add a diminished fifth, then subtract a major third, then add a minor second. Provide a single interval name.
+Start with a diminished fourth, then subtract a double-diminished fourth, then add a diminished fifth, then subtract a major third, then add a minor second. Provide a single interval name for the final result, for example, diminished fourth or major tenth.
 
 ANSWER:
 diminished fourth
@@ -91,7 +91,7 @@ With interval number 4 and 4 semitones, the resulting interval is a diminished f
 TASK 06 | mode=interval_arithmetic
 --------------------------------------------------------------------------------
 PROMPT:
-Start with a double-augmented fifteenth, then reduce to a simple interval and invert it, then subtract a perfect fifth, then add a perfect eleventh, then reduce to a simple interval and invert it. The answer is one interval name for the final result.
+Start with a double-augmented fifteenth, then reduce to a simple interval and invert it, then subtract a perfect fifth, then add a perfect eleventh, then reduce to a simple interval and invert it. Answer with one interval name for the final result, for example, minor third or double-diminished seventh.
 
 ANSWER:
 double-augmented second

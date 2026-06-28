@@ -57,7 +57,7 @@ Counting convention:
 | `inversion` | ~400,000+ | chord quality, root spelling, inversion/bass member, random chord-tone order, notation family and ABC key |
 | `open_close_voicing` | ~500,000+ | triads/sevenths, open vs close voicing, randomized open-voicing registers, octave placement, notation family and ABC key |
 | `enharmonic_chord_equivalence` | ~500,000,000+ | yes/no cases, enharmonic respellings, pitch-class sets, optional octave-bearing chords, random order, notation family and ABC key |
-| `chromatic_chord_label` | ~50,000+ | 5 chromatic chord labels, major/minor keys, key complexity, with/without octave, ordered vs unordered chord prompts, notation family and ABC key |
+| `chromatic_chord_label` | ~40,000+ | 4 chromatic chord labels, major/minor keys, key complexity, with/without octave, ordered vs unordered chord prompts, notation family and ABC key |
 | `chord_membership` | ~2,000,000+ | major/natural-minor keys, diatonic and altered non-diatonic chords, triads/sevenths, optional octaves, random order, notation family and ABC key |
 | `roman_numeral_from_chord` | 1,000,000+ | major/minor keys, diatonic and secondary Roman figures, triad/seventh inversions, optional octaves, random order, notation family and ABC key |
 | `chord_from_roman_numeral` | ~10,000+ | key, Roman figure, triad/seventh quality, inversion suffix, secondary functions, SPN vs compact ABC answer policy |
@@ -91,10 +91,10 @@ Openers:
 
 Tails for the same mode:
 
-- `The answer is one interval name, including compound/simple size as written.`
-- `Give one interval name, preserving the written interval number rather than reducing compound intervals to simple ones.`
-- `Answer with one interval name, preserving the written simple or compound interval number.`
-- `The expected answer is one interval name with the written interval number preserved.`
+- `Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound.`
+- `Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones.`
+- `Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number.`
+- `The expected answer is one interval name, for example, diminished fifth or perfect fifteenth, with the written interval number preserved.`
 
 Examples from one `chord_roman_reasoning` mode, `roman_numeral_from_chord`.
 

@@ -83,10 +83,10 @@ INTERVAL_NAME_SCORE_OPENERS = (
 )
 INTERVAL_NAME_TAILS = (
     "Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.",
-    "Give one interval name, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.",
-    "Answer with one interval name, preserving the written simple or compound interval number and treating enharmonically equivalent interval names as distinct.",
-    "The expected answer is one interval name with the written interval number preserved; enharmonically equivalent interval names are distinct.",
-    "Provide one interval name, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.",
+    "Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.",
+    "Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number and treating enharmonically equivalent interval names as distinct.",
+    "The expected answer is one interval name, for example, diminished fifth or perfect fifteenth, with the written interval number preserved; enharmonically equivalent interval names are distinct.",
+    "Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.",
 )
 INTERVAL_ARITHMETIC_SINGLE_OPENERS = {
     "add": (
@@ -121,10 +121,10 @@ INTERVAL_ARITHMETIC_CHAIN_OPENERS = (
 )
 INTERVAL_ONLY_TAILS = (
     "Answer format: one interval name for the final result, for example, major sixth or diminished tenth. Preserve the theoretical interval spelling; enharmonically equivalent interval names are distinct.",
-    "Give one interval name for the final result, using the resulting interval number and preserving the theoretical interval spelling; enharmonic substitutes are distinct.",
-    "Answer with one interval name for the final result. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.",
+    "Give one interval name for the final result, for example, perfect fifth or augmented ninth, using the resulting interval number and preserving the theoretical interval spelling; enharmonic substitutes are distinct.",
+    "Answer with one interval name for the final result, for example, minor third or double-diminished seventh. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.",
     "Provide a single interval name for the final result, for example, diminished fourth or major tenth. Preserve the theoretical interval spelling; enharmonic substitutes are distinct.",
-    "The expected answer is one interval name for the final result, with the theoretical interval spelling preserved; enharmonic substitutes are distinct.",
+    "The expected answer is one interval name for the final result, for example, augmented fifth or perfect eleventh, with the theoretical interval spelling preserved; enharmonic substitutes are distinct.",
 )
 PITCH_COUNT_OPENERS = (
     "Under pitch-class equivalence, how many distinct pitch classes are in {notes}?",

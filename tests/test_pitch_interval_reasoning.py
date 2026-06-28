@@ -15,6 +15,8 @@ from music_reasoning_tasks._music_theory import (
     Scale,
 )
 from music_reasoning_tasks.pitch_interval_reasoning import (
+    INTERVAL_NAME_TAILS,
+    INTERVAL_ONLY_TAILS,
     INTERVAL_SIZE_COMPARISON_OPENERS,
     INTERVAL_SIZE_COMPARISON_SCORE_OPENERS,
     MODE_NAMES,
@@ -57,6 +59,14 @@ def test_score_answer_normalizes_music_answer_variants():
         _problem("double-augmented eleventh", answer_kind="interval"),
     ) == 1.0
     assert task.score_answer(
+        "an augmented fifth.",
+        _problem("augmented fifth", answer_kind="interval"),
+    ) == 1.0
+    assert task.score_answer(
+        "P8",
+        _problem("perfect octave", answer_kind="interval"),
+    ) == 0.0
+    assert task.score_answer(
         "doubly augmented eleventh.",
         _problem("double-augmented eleventh", answer_kind="interval"),
     ) == 1.0
@@ -71,9 +81,19 @@ def test_score_answer_normalizes_music_answer_variants():
     assert task.score_answer("B♮4", _problem("B4", answer_kind="note", answer_notation="scientific pitch notation")) == 1.0
     assert task.score_answer("B", _problem("=B", answer_kind="note", answer_notation="compact ABC notation")) == 1.0
     assert task.score_answer('"=B"', _problem("B", answer_kind="note", answer_notation="compact ABC notation")) == 1.0
+    assert task.score_answer(
+        "__D'",
+        _problem("__d", answer_kind="note", answer_notation="compact ABC notation"),
+    ) == 1.0
     assert task.score_answer("4", _problem(4, answer_kind="integer")) == 1.0
     assert task.score_answer("4.", _problem(4, answer_kind="integer")) == 1.0
     assert task.score_answer("4.0", _problem(4, answer_kind="integer")) == 0.0
+
+
+def test_interval_answer_tails_show_long_form_examples():
+    tails = INTERVAL_NAME_TAILS + INTERVAL_ONLY_TAILS
+
+    assert all("for example" in tail.lower() for tail in tails)
 
 
 @pytest.mark.parametrize("mode", MODE_NAMES)

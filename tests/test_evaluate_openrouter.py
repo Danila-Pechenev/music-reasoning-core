@@ -69,8 +69,9 @@ def test_cli_help_describes_every_optional_argument_default(monkeypatch, capsys)
     assert "Required exact OpenRouter model ID" in normalized_help
 
 
-def test_load_benchmark_passes_configuration_to_hugging_face(monkeypatch):
+def test_load_benchmark_pins_configuration_to_exact_commit(monkeypatch):
     calls = []
+    commit = "a" * 40
 
     def fake_load_dataset(repo, config, *, revision):
         calls.append((repo, config, revision))
@@ -81,12 +82,12 @@ def test_load_benchmark_passes_configuration_to_hugging_face(monkeypatch):
     rows = evaluate_openrouter._load_benchmark(
         "owner/benchmark",
         "n16",
-        "v0.3.0",
+        commit,
         ["easy"],
         None,
     )
 
-    assert calls == [("owner/benchmark", "n16", "v0.3.0")]
+    assert calls == [("owner/benchmark", "n16", commit)]
     assert rows == [_benchmark_row()]
 
 
