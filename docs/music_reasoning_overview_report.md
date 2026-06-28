@@ -31,36 +31,36 @@ For these music generators, difficulty level should be understood primarily as a
 
 Counting convention:
 
-- Counted as different: notation family, ABC key `K:`, note/chord spellings, octave numbers, interval qualities/numbers, key/mode contexts, instrument choices, operation chains, and random order of note/chord collections when that order affects the reasoning task.
+- Counted as different: notation family, ABC key `K:`, explicit versus key-implied ABC accidentals, note/chord spellings, octave numbers, interval qualities/numbers, key/mode contexts, instrument choices, operation chains, and random order of note/chord collections when that order affects the reasoning task.
 - Not counted as different: alternative prompt openers/tails, `L:` values, `M:` values, and ABC duration suffixes.
 - Therefore, the table estimates the number of **different underlying tasks**. The actual number of possible **surface formulations** is many times larger because `L:`, `M:`, duration suffixes, opener/tail wording, and answer-choice ordering are also randomized.
-- Values are rounded order-of-magnitude estimates. Exact closed forms are messy because several modes use rejection sampling to stay within supported spelling and accidental bounds.
+- Values are rounded support-size estimates obtained by enumerating valid musical inputs and applying the notation variants allowed by each mode. They describe reachable tasks, not their sampling probabilities. For the pitch family, the count includes the level-5 branch in which stochastic rounding lets `max_interval_number` reach `16`.
 
 ### `pitch_interval_reasoning`
 
 | Mode | Approx. different tasks at level 5 | Main diversity sources |
 |---|---:|---|
-| `interval_naming` | ~125,000+ | start note, constructed end note, interval number up to 16, double accidentals, SPN/compact ABC/full ABC, ABC key signatures |
-| `interval_arithmetic` | ~1,000,000,000+ | four-step chains; add/subtract/reduce-then-invert operations; interval qualities and compound interval numbers |
-| `pitch_count` | ~1,000,000,000,000,000,000,000+ | 9-note lists, pitch-class subsets, enharmonic spellings, octaves, order of notes, notation family and ABC key |
-| `interval_classification` | ~50,000-100,000 | major/natural-minor/harmonic-minor/melodic-minor contexts, all conventional key signatures, diatonic vs chromatic note pairs |
-| `interval_size_comparison` | ~800,000,000+ | two written intervals, equal/different exact semitone spans, interval qualities and compound numbers, octaves, notation family and ABC key |
-| `instrument_transposition` | ~24,000+ | 12 common transposing instruments, written pitch spellings/octaves, SPN/compact ABC/full ABC, ABC key signatures |
-| `interval_construction` | ~500,000+ | start note, interval quality/number, above/below direction, answer-with-octave vs no-octave cases, notation family and ABC key |
-| `transposition_chain` | ~150,000,000,000+ | four transposition steps, each with direction and interval, accidental constraints, start note, notation family and ABC key |
+| `interval_naming` | ~184,000 | start note, constructed end note, interval number up to 16, double accidentals, SPN/compact ABC/full ABC, ABC key signatures |
+| `interval_arithmetic` | ~1.26 billion | four-step chains; add/subtract/reduce-then-invert operations; interval qualities and compound interval numbers |
+| `pitch_count` | ~1.38 x 10^22 | 9-note lists, pitch-class subsets, enharmonic spellings, octaves, order of notes, notation family and ABC key |
+| `interval_classification` | ~52,600 | major/natural-minor/harmonic-minor/melodic-minor contexts, all conventional key signatures, diatonic vs chromatic note pairs |
+| `interval_size_comparison` | ~29.3 billion | two written intervals, equal/different exact semitone spans, interval qualities and compound numbers, octaves, notation family and independently sampled ABC keys |
+| `instrument_transposition` | ~27,000 | 12 common transposing instruments, written pitch spellings/octaves, SPN/compact ABC/full ABC, ABC key signatures |
+| `interval_construction` | ~874,000 | start note, interval quality/number, above/below direction, answer-with-octave vs no-octave cases, notation family and ABC key |
+| `transposition_chain` | ~182 billion | four transposition steps, each with direction and interval, accidental constraints, start note, notation family and ABC key |
 
 ### `chord_roman_reasoning`
 
 | Mode | Approx. different tasks at level 5 | Main diversity sources |
 |---|---:|---|
-| `chord_quality` | ~100,000+ | triads and seventh chords, root spellings, double accidentals, random chord-tone order, SPN/compact ABC/full ABC, ABC key signatures |
-| `inversion` | ~400,000+ | chord quality, root spelling, inversion/bass member, random chord-tone order, notation family and ABC key |
-| `open_close_voicing` | ~500,000+ | triads/sevenths, open vs close voicing, randomized open-voicing registers, octave placement, notation family and ABC key |
-| `enharmonic_chord_equivalence` | ~500,000,000+ | yes/no cases, enharmonic respellings, pitch-class sets, optional octave-bearing chords, random order, notation family and ABC key |
-| `chromatic_chord_label` | ~40,000+ | 4 chromatic chord labels, major/minor keys, key complexity, with/without octave, ordered vs unordered chord prompts, notation family and ABC key |
-| `chord_membership` | ~2,000,000+ | major/natural-minor keys, diatonic and altered non-diatonic chords, triads/sevenths, optional octaves, random order, notation family and ABC key |
-| `roman_numeral_from_chord` | 1,000,000+ | major/minor keys, diatonic and secondary Roman figures, triad/seventh inversions, optional octaves, random order, notation family and ABC key |
-| `chord_from_roman_numeral` | ~10,000+ | key, Roman figure, triad/seventh quality, inversion suffix, secondary functions, SPN vs compact ABC answer policy |
+| `chord_quality` | ~283,000 | triads and seventh chords, root spellings, double accidentals, random chord-tone order, SPN/compact ABC/full ABC, ABC key signatures |
+| `inversion` | ~1.10 million | chord quality, root spelling, inversion/bass member, random chord-tone order, notation family and ABC key |
+| `open_close_voicing` | ~1.00 million | triads/sevenths, open vs close voicing, randomized open-voicing registers, octave placement, notation family and ABC key |
+| `enharmonic_chord_equivalence` | ~66.9 billion | yes/no cases, enharmonic respellings, pitch-class sets, optional octave-bearing chords, random order, notation family and independently sampled ABC keys |
+| `chromatic_chord_label` | ~13,400 | 4 chromatic chord labels, major/minor keys, key complexity, with/without octave, ordered vs unordered chord prompts, notation family and analytical ABC key |
+| `chord_membership` | ~1.17 million | major/natural-minor keys, diatonic and altered non-diatonic chords, triads/sevenths, optional octaves, random order, notation family and ABC key |
+| `roman_numeral_from_chord` | ~2.17 million | major/minor keys, diatonic and secondary Roman figures, triad/seventh inversions, optional octaves, random order, notation family and ABC key |
+| `chord_from_roman_numeral` | ~10,700 | key, Roman figure, triad/seventh quality, inversion suffix, secondary functions, SPN vs compact ABC answer policy |
 
 ## 3. Mechanisms Used To Make Tasks Diverse
 
@@ -91,10 +91,10 @@ Openers:
 
 Tails for the same mode:
 
-- `Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound.`
-- `Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones.`
-- `Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number.`
-- `The expected answer is one interval name, for example, diminished fifth or perfect fifteenth, with the written interval number preserved.`
+- `Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.`
+- `Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.`
+- `Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number and treating enharmonically equivalent interval names as distinct.`
+- `The expected answer is one interval name, for example, diminished fifth or perfect fifteenth, with the written interval number preserved; enharmonically equivalent interval names are distinct.`
 
 Examples from one `chord_roman_reasoning` mode, `roman_numeral_from_chord`.
 
@@ -107,10 +107,10 @@ Openers:
 
 Tails for the same mode:
 
-- `The answer is one compact Roman numeral with figured-bass digits closed up.`
-- `Give one compact Roman numeral, closing up figured-bass digits.`
+- `Answer format: one compact Roman numeral with figured-bass digits closed up, for example, V65/V.`
+- `Give one compact Roman numeral with any figured-bass digits closed up, for example, viio42 or IV64.`
 - `The expected answer is one compact Roman numeral with closed-up figured bass, for example, V65/V.`
-- `Answer with one compact Roman numeral and closed-up figured bass.`
+- `Answer with one compact Roman numeral, closing up figured bass, for example, V7.`
 
 These variants are not counted in the diversity table above, but they increase the number of visible prompt formulations.
 
@@ -160,14 +160,14 @@ python -m coverage run -m pytest tests/test_music_theory.py tests/test_pitch_int
 python -m coverage report src/music_reasoning_tasks/_music_theory.py src/music_reasoning_tasks/pitch_interval_reasoning.py src/music_reasoning_tasks/chord_roman_reasoning.py
 ```
 
-Result: **94 passed**.
+Result: **115 passed**.
 
 | Test file | Collected tests | Main target | Covered source file | Coverage |
 |---|---:|---|---|---:|
-| `tests/test_music_theory.py` | 43 | shared note, interval, scale, ABC, rendering, normalization, and music21 adapter logic | `src/music_reasoning_tasks/_music_theory.py` | 94% |
-| `tests/test_pitch_interval_reasoning.py` | 22 | pitch/interval generator modes, metadata reconstruction, scoring, ABC rendering, interval arithmetic, transposition chains | `src/music_reasoning_tasks/pitch_interval_reasoning.py` | 93% |
-| `tests/test_chord_roman_reasoning.py` | 29 | chord/Roman generator modes, scoring, music21 cross-checks, Roman pools, key complexity, ABC prompts | `src/music_reasoning_tasks/chord_roman_reasoning.py` | 97% |
-| **Total** | **94** | all implemented music reasoning code | three music modules together | **95%** |
+| `tests/test_music_theory.py` | 49 | shared note, interval, scale, ABC, rendering, normalization, and music21 adapter logic | `src/music_reasoning_tasks/_music_theory.py` | 94% |
+| `tests/test_pitch_interval_reasoning.py` | 29 | pitch/interval generator modes, metadata reconstruction, scoring, ABC rendering, interval arithmetic, transposition chains | `src/music_reasoning_tasks/pitch_interval_reasoning.py` | 94% |
+| `tests/test_chord_roman_reasoning.py` | 37 | chord/Roman generator modes, scoring, music21 cross-checks, Roman pools, key complexity, ABC prompts | `src/music_reasoning_tasks/chord_roman_reasoning.py` | 97% |
+| **Total** | **115** | all implemented music reasoning code | three music modules together | **95%** |
 
 ## 6. Curated Examples
 

@@ -49,10 +49,8 @@ The generators therefore emphasize:
 
 The current implementation includes two task families:
 `pitch_interval_reasoning` and `chord_roman_reasoning`. See
-`docs/music_reasoning_specification.md` for their modes and difficulty knobs.
-The pitch/interval family includes interval-size comparison tasks, where two
-intervals are equivalent exactly when their complete spans contain the same
-number of semitones.
+[the music reasoning specification](docs/music_reasoning_specification.md) for
+their modes and difficulty knobs.
 
 ## Notation Coverage
 
@@ -179,6 +177,54 @@ Benchmark exports append `Return only the requested answer.` to every prompt
 to enforce compact evaluation responses. This instruction is benchmark-only;
 examples generated directly for training retain their original prompts.
 
+## Published Benchmark
+
+The generated benchmark is published on Hugging Face as
+[`dpechenev/music-reasoning-benchmark`](https://huggingface.co/datasets/dpechenev/music-reasoning-benchmark).
+It provides four nested configurations. Each configuration contains the same
+16 modes: eight modes from each implemented task family.
+
+| Configuration | Examples per mode per split | Examples per split | Total examples |
+|---|---:|---:|---:|
+| `n16` | 16 | 256 | 768 |
+| `n32` | 32 | 512 | 1,536 |
+| `n64` (default) | 64 | 1,024 | 3,072 |
+| `n128` | 128 | 2,048 | 6,144 |
+
+The configurations are deterministic nested subsets: `n16` is contained in
+`n32`, which is contained in `n64`, which is contained in `n128`. This permits
+cost-aware evaluations at several sizes while keeping smaller runs directly
+comparable with larger ones.
+
+Every configuration has three difficulty splits:
+
+| Split | Generator level | Interpretation |
+|---|---:|---|
+| `easy` | 0 | Base distribution |
+| `moderate` | 3 | Intermediate distribution |
+| `hard` | 5 | Most demanding distribution |
+
+Each row contains `prompt`, canonical `answer`, generated `cot`, task `family`
+and `mode`, difficulty fields, `answer_kind`, and JSON-encoded symbolic
+`metadata`. Difficulty is distributional: harder splits sample difficult
+features more often and from broader ranges, but may still contain simpler
+individual examples.
+
+Load the default configuration with:
+
+```python
+from datasets import load_dataset
+
+dataset = load_dataset(
+    "dpechenev/music-reasoning-benchmark",
+    "n64",
+)
+```
+
+For reproducible evaluation, pass a release tag through `revision`, for
+example, `revision="v0.4.2"`. The locally generated Hugging Face layout and
+dataset card are stored in `benchmark_data/music_reasoning_benchmark/`.
+
 ## Evaluate an OpenRouter Model
 
 Install the benchmark-evaluation dependency:
@@ -226,7 +272,7 @@ Select another published benchmark release with `--revision`, for example:
 
 ```bash
 python scripts/evaluate_openrouter.py openai/gpt-4.1-mini \
-  --revision v0.1.1
+  --revision v0.4.2
 ```
 
 Select a different benchmark size with `--dataset-config`:
@@ -275,8 +321,8 @@ python scripts/evaluate_openrouter.py openai/gpt-4.1-mini \
 The `examples/` directory contains curated readable samples generated at level
 5:
 
-- `pitch_interval_showcase_l5.txt`
-- `chord_roman_showcase_l5.txt`
+- [`pitch_interval_showcase_l5.txt`](examples/pitch_interval_showcase_l5.txt)
+- [`chord_roman_showcase_l5.txt`](examples/chord_roman_showcase_l5.txt)
 
 These files are intended for quick inspection, demos, and presentations. Larger
 training or evaluation pools should be regenerated with
@@ -333,11 +379,12 @@ The tests check:
 
 The `docs/` directory contains two higher-level project documents:
 
-- `music_reasoning_specification.md` describes the implemented task families,
-  modes, difficulty knobs, metadata conventions, and planned extensions.
-- `music_reasoning_overview_report.md` is an overview of the
-  current implementation, including task-family summaries, diversity estimates, and
-  testing/coverage information.
+- [`music_reasoning_specification.md`](docs/music_reasoning_specification.md)
+  describes the implemented task families, modes, difficulty knobs, metadata
+  conventions, and planned extensions.
+- [`music_reasoning_overview_report.md`](docs/music_reasoning_overview_report.md)
+  summarizes the current implementation, including task-family descriptions,
+  diversity estimates, and testing/coverage information.
 
 ## Extending the Project
 
