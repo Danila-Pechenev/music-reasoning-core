@@ -1,5 +1,5 @@
-Pitch Interval Reasoning: 24 Curated Level-5 Examples
-=====================================================
+Pitch Interval Reasoning: 24 Selected Level-5 Examples
+======================================================
 
 TASK 01 | mode=interval_naming | style=full_abc_score
 --------------------------------------------------------------------------------
@@ -7,218 +7,219 @@ PROMPT:
 Determine the interval represented by the two notes in this ABC score fragment:
 L:1/4
 M:none
-K:Ab
-  [^^B=e']1 |] %1
-Interpret the score using its key signature. Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones.
+K:Dm
+  [__C__B] |] %1
+Interpret the score using its key signature. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
-double-diminished eleventh
+major seventh
 
 COT:
-The score note "^^B" explicitly marks B double sharp, overriding K:Ab, so it represents "^^B".
-The score note "=e'" explicitly marks E natural, overriding K:Ab, so it represents "=e'".
-Counting the note letters from the first note up to the second note, including octave changes, gives interval number 11 (eleventh).
-The chromatic distance from "^^B" to "=e'" is 15 semitones.
-The major/perfect form of an eleventh is 17 semitones.
-Comparing those distances gives the quality double-diminished.
-So the interval is a double-diminished eleventh.
+The score note "__C" explicitly marks C double flat, so it represents "__C".
+The score note "__B" explicitly marks B double flat, overriding K:Dm, so it represents "__B".
+Counting the note letters from the first note up to the second note, including octave changes, gives interval number 7 (seventh).
+The chromatic distance from "__C" to "__B" is 11 semitones.
+The major/perfect form of a seventh is 11 semitones.
+Comparing those distances gives the quality major.
+So the interval is a major seventh.
 
 TASK 02 | mode=interval_naming | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Identify the interval from "f" up to "^^e''". Notes are written in compact ABC notation. Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number.
+Name the ascending interval whose endpoints are "^^g" and "^d''". Notes are written in compact ABC notation. Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
-double-augmented fourteenth
+diminished twelfth
 
 COT:
-Counting the note letters from the first note up to the second note, including octave changes, gives interval number 14 (fourteenth).
-The chromatic distance from "f" to "^^e''" is 25 semitones.
-The major/perfect form of a fourteenth is 23 semitones.
-Comparing those distances gives the quality double-augmented.
-So the interval is a double-augmented fourteenth.
+Counting the note letters from the first note up to the second note, including octave changes, gives interval number 12 (twelfth).
+The chromatic distance from "^^g" to "^d''" is 18 semitones.
+The major/perfect form of a twelfth is 19 semitones.
+Comparing those distances gives the quality diminished.
+So the interval is a diminished twelfth.
 
 TASK 03 | mode=interval_naming | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-Name the ascending interval whose endpoints are A3 and Gbb5. Notes are written in scientific pitch notation. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes.
+What interval goes from D##5 to A##6? Notes are written in scientific pitch notation. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
-double-diminished fourteenth
+perfect twelfth
 
 COT:
-Counting the note letters from the first note up to the second note, including octave changes, gives interval number 14 (fourteenth).
-The chromatic distance from A3 to Gbb5 is 20 semitones.
-The major/perfect form of a fourteenth is 23 semitones.
-Comparing those distances gives the quality double-diminished.
-So the interval is a double-diminished fourteenth.
+Counting the note letters from the first note up to the second note, including octave changes, gives interval number 12 (twelfth).
+The chromatic distance from D##5 to A##6 is 19 semitones.
+The major/perfect form of a twelfth is 19 semitones.
+Comparing those distances gives the quality perfect.
+So the interval is a perfect twelfth.
 
 TASK 04 | mode=interval_arithmetic
 --------------------------------------------------------------------------------
 PROMPT:
-Start with a double-diminished twelfth, then reduce to a simple interval and invert it, then add a perfect twelfth, then subtract an augmented sixth, then subtract a double-augmented seventh. The expected answer is one interval name for the final result, for example, augmented fifth or perfect eleventh.
-
-ANSWER:
-double-diminished fourth
-
-COT:
-Start with a double-diminished twelfth: interval number 12 and 17 semitones.
-For interval numbers, addition uses current + interval - 1, and subtraction uses current - interval + 1.
-For reduce-then-invert, first reduce compound interval numbers by subtracting 7 for each octave; then invert the simple interval so the two simple interval numbers add to 9.
-Reduce a double-diminished twelfth to a double-diminished fifth; then invert it: 9 - 5 = 4, and double-diminished inverts to double-augmented.
-Add a perfect twelfth: interval number 4 + 12 - 1 = 15, and semitones 7 + 19 = 26.
-Subtract an augmented sixth: interval number 15 - 6 + 1 = 10, and semitones 26 - 10 = 16.
-Subtract a double-augmented seventh: interval number 10 - 7 + 1 = 4, and semitones 16 - 13 = 3.
-With interval number 4 and 3 semitones, the resulting interval is a double-diminished fourth.
-
-TASK 05 | mode=interval_arithmetic
---------------------------------------------------------------------------------
-PROMPT:
-Start with a diminished fourth, then subtract a double-diminished fourth, then add a diminished fifth, then subtract a major third, then add a minor second. Provide a single interval name for the final result, for example, diminished fourth or major tenth.
-
-ANSWER:
-diminished fourth
-
-COT:
-Start with a diminished fourth: interval number 4 and 4 semitones.
-For interval numbers, addition uses current + interval - 1, and subtraction uses current - interval + 1.
-Subtract a double-diminished fourth: interval number 4 - 4 + 1 = 1, and semitones 4 - 3 = 1.
-Add a diminished fifth: interval number 1 + 5 - 1 = 5, and semitones 1 + 6 = 7.
-Subtract a major third: interval number 5 - 3 + 1 = 3, and semitones 7 - 4 = 3.
-Add a minor second: interval number 3 + 2 - 1 = 4, and semitones 3 + 1 = 4.
-With interval number 4 and 4 semitones, the resulting interval is a diminished fourth.
-
-TASK 06 | mode=interval_arithmetic
---------------------------------------------------------------------------------
-PROMPT:
-Start with a double-augmented fifteenth, then reduce to a simple interval and invert it, then subtract a perfect fifth, then add a perfect eleventh, then reduce to a simple interval and invert it. Answer with one interval name for the final result, for example, minor third or double-diminished seventh.
+Beginning with a double-diminished fourteenth, perform these steps: add a major second, then reduce to a simple interval and invert it, then subtract a double-augmented second, then subtract a double-diminished sixth. Give one interval name for the final result, for example, perfect fifth or augmented ninth, using the resulting interval number and preserving the theoretical interval spelling; enharmonic substitutes are distinct.
 
 ANSWER:
 double-augmented second
 
 COT:
-Start with a double-augmented fifteenth: interval number 15 and 26 semitones.
+Start with a double-diminished fourteenth: interval number 14 and 20 semitones.
 For interval numbers, addition uses current + interval - 1, and subtraction uses current - interval + 1.
 For reduce-then-invert, first reduce compound interval numbers by subtracting 7 for each octave; then invert the simple interval so the two simple interval numbers add to 9.
-Reduce a double-augmented fifteenth to a double-augmented unison; then invert it: 9 - 1 = 8, and double-augmented inverts to double-diminished.
-Subtract a perfect fifth: interval number 8 - 5 + 1 = 4, and semitones 10 - 7 = 3.
-Add a perfect eleventh: interval number 4 + 11 - 1 = 14, and semitones 3 + 17 = 20.
-Reduce a double-diminished fourteenth to a double-diminished seventh; then invert it: 9 - 7 = 2, and double-diminished inverts to double-augmented.
+Add a major second: interval number 14 + 2 - 1 = 15, and semitones 20 + 2 = 22.
+Reduce a double-diminished fifteenth to a double-diminished unison; then invert it: 9 - 1 = 8, and double-diminished inverts to double-augmented.
+Subtract a double-augmented second: interval number 8 - 2 + 1 = 7, and semitones 14 - 4 = 10.
+Subtract a double-diminished sixth: interval number 7 - 6 + 1 = 2, and semitones 10 - 6 = 4.
 With interval number 2 and 4 semitones, the resulting interval is a double-augmented second.
+
+TASK 05 | mode=interval_arithmetic
+--------------------------------------------------------------------------------
+PROMPT:
+Use a major thirteenth as the starting interval, then subtract a double-diminished fourth, then add a double-diminished seventh, then reduce to a simple interval and invert it, then subtract a perfect fifth. Answer with one interval name for the final result, for example, minor third or double-diminished seventh. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.
+
+ANSWER:
+minor third
+
+COT:
+Start with a major thirteenth: interval number 13 and 21 semitones.
+For interval numbers, addition uses current + interval - 1, and subtraction uses current - interval + 1.
+For reduce-then-invert, first reduce compound interval numbers by subtracting 7 for each octave; then invert the simple interval so the two simple interval numbers add to 9.
+Subtract a double-diminished fourth: interval number 13 - 4 + 1 = 10, and semitones 21 - 3 = 18.
+Add a double-diminished seventh: interval number 10 + 7 - 1 = 16, and semitones 18 + 8 = 26.
+Reduce a major sixteenth to a major second; then invert it: 9 - 2 = 7, and major inverts to minor.
+Subtract a perfect fifth: interval number 7 - 5 + 1 = 3, and semitones 10 - 7 = 3.
+With interval number 3 and 3 semitones, the resulting interval is a minor third.
+
+TASK 06 | mode=interval_arithmetic
+--------------------------------------------------------------------------------
+PROMPT:
+Apply this interval-arithmetic chain to a double-diminished fourteenth: reduce to a simple interval and invert it, then subtract a major second, then add a minor sixth, then add a double-diminished octave. Answer with one interval name for the final result, for example, minor third or double-diminished seventh. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.
+
+ANSWER:
+minor thirteenth
+
+COT:
+Start with a double-diminished fourteenth: interval number 14 and 20 semitones.
+For interval numbers, addition uses current + interval - 1, and subtraction uses current - interval + 1.
+For reduce-then-invert, first reduce compound interval numbers by subtracting 7 for each octave; then invert the simple interval so the two simple interval numbers add to 9.
+Reduce a double-diminished fourteenth to a double-diminished seventh; then invert it: 9 - 7 = 2, and double-diminished inverts to double-augmented.
+Subtract a major second: interval number 2 - 2 + 1 = 1, and semitones 4 - 2 = 2.
+Add a minor sixth: interval number 1 + 6 - 1 = 6, and semitones 2 + 8 = 10.
+Add a double-diminished octave: interval number 6 + 8 - 1 = 13, and semitones 10 + 10 = 20.
+With interval number 13 and 20 semitones, the resulting interval is a minor thirteenth.
 
 TASK 07 | mode=pitch_count | style=full_abc_score
 --------------------------------------------------------------------------------
 PROMPT:
 Counting enharmonically equivalent spellings as the same pitch class, how many distinct pitch classes are in this ABC score fragment?
 L:1/4
-M:6/8
-K:Bb
-  __D | __G, | ^^C, | f'4 | ^b'4 | ^^e'2 | ^^E4 | ^^C2 | __c'1 |] %1
-Interpret the score using its key signature. Give one integer.
-
-ANSWER:
-5
-
-COT:
-The score note "__D" explicitly marks D double flat, so it represents "__D".
-The score note "__G," explicitly marks G double flat, so it represents "__G,".
-The score note "^^C," explicitly marks C double sharp, so it represents "^^C,".
-In K:Bb, F has no key-signature accidental, so the score note "f'" represents "=f'".
-The score note "^b'" explicitly marks B sharp, overriding K:Bb, so it represents "^b'".
-The score note "^^e'" explicitly marks E double sharp, overriding K:Bb, so it represents "^^e'".
-The score note "^^E" explicitly marks E double sharp, overriding K:Bb, so it represents "^^E".
-The score note "^^C" explicitly marks C double sharp, so it represents "^^C".
-The score note "__c'" explicitly marks C double flat, so it represents "__c'".
-"__D" maps to pitch class 0 (C).
-"__G," maps to pitch class 5 (F).
-"^^C," maps to pitch class 2 (D).
-"=f'" maps to pitch class 5 (F).
-"^b'" maps to pitch class 0 (C).
-"^^e'" maps to pitch class 6 (F#/Gb).
-"^^E" maps to pitch class 6 (F#/Gb).
-"^^C" maps to pitch class 2 (D).
-"__c'" maps to pitch class 10 (A#/Bb).
-The distinct pitch classes are 0 (C), 2 (D), 5 (F), 6 (F#/Gb), 10 (A#/Bb), so there are 5 distinct pitch classes.
-
-TASK 08 | mode=pitch_count | style=compact_abc
---------------------------------------------------------------------------------
-PROMPT:
-Count the distinct pitch classes represented in "^^A,", "__C,", "^^d'", "__f", "__G,,", "^^a'", "__d", "^^C,", "_d'". Notes are written in compact ABC notation. Give one integer.
-
-ANSWER:
-8
-
-COT:
-"^^A," maps to pitch class 11 (B).
-"__C," maps to pitch class 10 (A#/Bb).
-"^^d'" maps to pitch class 4 (E).
-"__f" maps to pitch class 3 (D#/Eb).
-"__G,," maps to pitch class 5 (F).
-"^^a'" maps to pitch class 11 (B).
-"__d" maps to pitch class 0 (C).
-"^^C," maps to pitch class 2 (D).
-"_d'" maps to pitch class 1 (C#/Db).
-The distinct pitch classes are 0 (C), 1 (C#/Db), 2 (D), 3 (D#/Eb), 4 (E), 5 (F), 10 (A#/Bb), 11 (B), so there are 8 distinct pitch classes.
-
-TASK 09 | mode=pitch_count | style=spn
---------------------------------------------------------------------------------
-PROMPT:
-How many distinct pitch classes appear in F##3, G##6, Ebb6, C##5, F##4, Bbb5, C#6, C##4, B##5? Notes are written in scientific pitch notation. Answer with one integer.
+M:none
+K:Fm
+  b1 | __e'4 | __f'2 | ^^c | ^D | ^g'1 | ^^C | __F,2 | __e4 |] %1
+Interpret the score using its key signature. Answer format: one integer.
 
 ANSWER:
 4
 
 COT:
-F##3 maps to pitch class 7 (G).
-G##6 maps to pitch class 9 (A).
+The key signature K:Fm makes B flat, so the score note "b" represents "_b".
+The score note "__e'" explicitly marks E double flat, overriding K:Fm, so it represents "__e'".
+The score note "__f'" explicitly marks F double flat, so it represents "__f'".
+The score note "^^c" explicitly marks C double sharp, so it represents "^^c".
+The score note "^D" explicitly marks D sharp, overriding K:Fm, so it represents "^D".
+The score note "^g'" explicitly marks G sharp, so it represents "^g'".
+The score note "^^C" explicitly marks C double sharp, so it represents "^^C".
+The score note "__F," explicitly marks F double flat, so it represents "__F,".
+The score note "__e" explicitly marks E double flat, overriding K:Fm, so it represents "__e".
+"_b" maps to pitch class 10 (A#/Bb).
+"__e'" maps to pitch class 2 (D).
+"__f'" maps to pitch class 3 (D#/Eb).
+"^^c" maps to pitch class 2 (D).
+"^D" maps to pitch class 3 (D#/Eb).
+"^g'" maps to pitch class 8 (G#/Ab).
+"^^C" maps to pitch class 2 (D).
+"__F," maps to pitch class 3 (D#/Eb).
+"__e" maps to pitch class 2 (D).
+The distinct pitch classes are 2 (D), 3 (D#/Eb), 8 (G#/Ab), 10 (A#/Bb), so there are 4 distinct pitch classes.
+
+TASK 08 | mode=pitch_count | style=compact_abc
+--------------------------------------------------------------------------------
+PROMPT:
+After reducing "_E,", "__A,", "^^F,,", "__F,,", "_E,", "^^F,", "__F", "_E,", "^^F,," to pitch classes, how many unique classes remain? Notes are written in compact ABC notation. Answer format: one integer.
+
+ANSWER:
+2
+
+COT:
+"_E," maps to pitch class 3 (D#/Eb).
+"__A," maps to pitch class 7 (G).
+"^^F,," maps to pitch class 7 (G).
+"__F,," maps to pitch class 3 (D#/Eb).
+"_E," maps to pitch class 3 (D#/Eb).
+"^^F," maps to pitch class 7 (G).
+"__F" maps to pitch class 3 (D#/Eb).
+"_E," maps to pitch class 3 (D#/Eb).
+"^^F,," maps to pitch class 7 (G).
+The distinct pitch classes are 3 (D#/Eb), 7 (G), so there are 2 distinct pitch classes.
+
+TASK 09 | mode=pitch_count | style=spn
+--------------------------------------------------------------------------------
+PROMPT:
+Treat octave and enharmonic spelling differences as pitch-class equivalence. How many distinct pitch classes are in Ebb5, Ebb6, D##5, Cbb3, A5, A4, Fbb4, E##5, F2? Notes are written in scientific pitch notation. Answer with one integer.
+
+ANSWER:
+7
+
+COT:
+Ebb5 maps to pitch class 2 (D).
 Ebb6 maps to pitch class 2 (D).
-C##5 maps to pitch class 2 (D).
-F##4 maps to pitch class 7 (G).
-Bbb5 maps to pitch class 9 (A).
-C#6 maps to pitch class 1 (C#/Db).
-C##4 maps to pitch class 2 (D).
-B##5 maps to pitch class 1 (C#/Db).
-The distinct pitch classes are 1 (C#/Db), 2 (D), 7 (G), 9 (A), so there are 4 distinct pitch classes.
+D##5 maps to pitch class 4 (E).
+Cbb3 maps to pitch class 10 (A#/Bb).
+A5 maps to pitch class 9 (A).
+A4 maps to pitch class 9 (A).
+Fbb4 maps to pitch class 3 (D#/Eb).
+E##5 maps to pitch class 6 (F#/Gb).
+F2 maps to pitch class 5 (F).
+The distinct pitch classes are 2 (D), 3 (D#/Eb), 4 (E), 5 (F), 6 (F#/Gb), 9 (A), 10 (A#/Bb), so there are 7 distinct pitch classes.
 
 TASK 10 | mode=interval_classification
 --------------------------------------------------------------------------------
 PROMPT:
-In the collection Bb natural minor, what label applies to the relation Fbb-C##? Select exactly one label from this list: chromatic alteration, diatonic dissonance, diatonic consonance.
+Using Db major, classify the note-to-note relation Abb-Gbb. Answer format: one label from this list: diatonic consonance, diatonic dissonance, chromatic alteration.
 
 ANSWER:
 chromatic alteration
 
 COT:
-The Bb natural minor collection is Bb, C, Db, Eb, F, Gb, Ab.
-Fbb is not in the collection, and C## is not in the collection.
+The Db major collection is Db, Eb, F, Gb, Ab, Bb, C.
+Abb is not in the collection, and Gbb is not in the collection.
 At least one note is outside the collection, so the relation is a chromatic alteration.
 
 TASK 11 | mode=interval_classification
 --------------------------------------------------------------------------------
 PROMPT:
-In A# melodic minor ascending, classify the note-to-note relation F##-B#. The answer is exactly one of these labels: diatonic consonance, chromatic alteration, diatonic dissonance.
+Determine whether the relation B#-C## in D# melodic minor ascending is diatonic consonance, diatonic dissonance, or chromatic alteration. Use one label from these options: diatonic dissonance, chromatic alteration, diatonic consonance.
 
 ANSWER:
 diatonic dissonance
 
 COT:
-The A# melodic minor ascending collection is A#, B#, C#, D#, E#, F##, G##.
-F## is in the collection, and B# is in the collection.
-The written interval from F## to B# is a perfect fourth.
+The D# melodic minor ascending collection is D#, E#, F#, G#, A#, B#, C##.
+B# is in the collection, and C## is in the collection.
+The written interval from B# to C## is a major second.
 Since both notes are diatonic and the interval is a dissonance, the label is diatonic dissonance.
 
 TASK 12 | mode=interval_classification
 --------------------------------------------------------------------------------
 PROMPT:
-In the collection D# harmonic minor, what label applies to the relation A#-E#? Answer with exactly one label from: chromatic alteration, diatonic consonance, diatonic dissonance.
+Determine whether the relation G-Bb in C natural minor is diatonic consonance, diatonic dissonance, or chromatic alteration. The expected answer is exactly one of these labels: chromatic alteration, diatonic dissonance, diatonic consonance.
 
 ANSWER:
 diatonic consonance
 
 COT:
-The D# harmonic minor collection is D#, E#, F#, G#, A#, B, C##.
-A# is in the collection, and E# is in the collection.
-The written interval from A# to E# is a perfect fifth.
+The C natural minor collection is C, D, Eb, F, G, Ab, Bb.
+G is in the collection, and Bb is in the collection.
+The written interval from G to Bb is a minor third.
 Since both notes are diatonic and the interval is a consonance, the label is diatonic consonance.
 
 TASK 13 | mode=interval_size_comparison | style=full_abc_score
@@ -226,194 +227,192 @@ TASK 13 | mode=interval_size_comparison | style=full_abc_score
 PROMPT:
 Are the written intervals in these two ABC fragments interval-size equivalent by exact semitone span?
 First fragment:
-L:1/8
-M:4/4
-K:F
-  [_F__e']4 |] %1
+L:1/4
+M:6/8
+K:D
+  [^^D,^^e]1 |] %1
 Second fragment:
-L:1/16
+L:1/4
 M:4/4
-K:Eb
-  [Gg']1 |] %1
-Resolve both ABC scores using their key signatures, then respond with one lowercase word: 'yes' or 'no'.
-
-ANSWER:
-no
-
-COT:
-The score note "_F" explicitly marks F flat, so it represents "_F".
-The score note "__e'" explicitly marks E double flat, so it represents "__e'".
-In K:Eb, G has no key-signature accidental, so the score note "G" represents "=G".
-In K:Eb, G has no key-signature accidental, so the score note "g'" represents "=g'".
-The interval from "_F" to "__e'" is a minor fourteenth, which spans 22 semitones.
-The interval from "=G" to "=g'" is a perfect fifteenth, which spans 24 semitones.
-The semitone spans differ, so the intervals are not interval-size equivalent and the answer is no.
-
-TASK 14 | mode=interval_size_comparison | style=compact_abc
---------------------------------------------------------------------------------
-PROMPT:
-Check whether the written intervals "b"-"_g'" and "G"-"d" are interval-size equivalent by semitone count. Notes are written in compact ABC notation. Answer format: 'yes' or 'no'.
+K:Cm
+  [=b^^b'']1 |] %1
+After resolving both ABC scores by key signature, give one word: 'yes' or 'no'.
 
 ANSWER:
 yes
 
 COT:
-The interval from "b" to "_g'" is a diminished sixth, which spans 7 semitones.
-The interval from "G" to "d" is a perfect fifth, which spans 7 semitones.
+The score note "^^D," explicitly marks D double sharp, so it represents "^^D,".
+The score note "^^e" explicitly marks E double sharp, so it represents "^^e".
+The score note "=b" explicitly marks B natural, overriding K:Cm, so it represents "=b".
+The score note "^^b''" explicitly marks B double sharp, overriding K:Cm, so it represents "^^b''".
+The interval from "^^D," to "^^e" is a major sixteenth, which spans 26 semitones.
+The interval from "=b" to "^^b''" is a double-augmented fifteenth, which spans 26 semitones.
 The semitone spans are equal, so the intervals are interval-size equivalent and the answer is yes.
 
-TASK 15 | mode=interval_size_comparison | style=spn
+TASK 14 | mode=interval_size_comparison | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Determine whether the written intervals A5-A6 and D3-E3 are interval-size equivalent by exact semitone span. Notes are written in scientific pitch notation. Respond with one lowercase word: 'yes' or 'no'.
+Check whether the written intervals "D"-"^^D" and "B,"-"__G" are interval-size equivalent by semitone count. Notes are written in compact ABC notation. The expected answer is one word: 'yes' or 'no'.
 
 ANSWER:
 no
 
 COT:
-The interval from A5 to A6 is a perfect octave, which spans 12 semitones.
-The interval from D3 to E3 is a major second, which spans 2 semitones.
+The interval from "D" to "^^D" is a double-augmented unison, which spans 2 semitones.
+The interval from "B," to "__G" is a double-diminished sixth, which spans 6 semitones.
 The semitone spans differ, so the intervals are not interval-size equivalent and the answer is no.
+
+TASK 15 | mode=interval_size_comparison | style=spn
+--------------------------------------------------------------------------------
+PROMPT:
+Is the written interval G##4-C##5 interval-size equivalent to C4-Gbb4, meaning equal in semitone span? Notes are written in scientific pitch notation. Respond with one lowercase word: 'yes' or 'no'.
+
+ANSWER:
+yes
+
+COT:
+The interval from G##4 to C##5 is a perfect fourth, which spans 5 semitones.
+The interval from C4 to Gbb4 is a double-diminished fifth, which spans 5 semitones.
+The semitone spans are equal, so the intervals are interval-size equivalent and the answer is yes.
 
 TASK 16 | mode=instrument_transposition | style=full_abc_score | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-A B-flat soprano saxophone part writes the note in this ABC score fragment:
+A B-flat bass clarinet part writes the note in the ABC score fragment below. Convert it to sounding pitch:
 L:1/16
-M:3/4
-K:F
-  ^^G,1 |] %1
-What sounding pitch is produced?
-Interpret the score using its key signature. Provide one note name in compact ABC notation, with any accidental made explicit.
+M:none
+K:Fm
+  _C, |] %1
+Interpret the score using its key signature. Answer format: one full compact ABC pitch token, for example, ^C, _B,, or =F', with any accidental made explicit, preserving the diatonic spelling implied by the instrument's transposition interval; enharmonic substitutes are distinct.
 
 ANSWER:
-^^F,
+__B,,,
 
 COT:
-The score note "^^G," explicitly marks G double sharp, so it represents "^^G,".
-B-flat soprano saxophone sounds a major second lower than written.
-Moving "^^G," down a major second gives "^^F,".
+The score note "_C," explicitly marks C flat, so it represents "_C,".
+B-flat bass clarinet sounds a major ninth lower than written.
+Moving "_C," down a major ninth gives "__B,,,".
 
 TASK 17 | mode=instrument_transposition | style=compact_abc | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-An E-flat baritone saxophone part notates "^^D". What pitch actually sounds? Notes are written in compact ABC notation. Provide one note name in compact ABC notation.
+For a B-flat soprano saxophone part, convert the written note "__D" to sounding pitch. Notes are written in compact ABC notation. Answer format: one full compact ABC pitch token, for example, ^C, _B,, or =F', preserving the diatonic spelling implied by the instrument's transposition interval; enharmonic substitutes are distinct.
 
 ANSWER:
-^^F,,
+__C
 
 COT:
-E-flat baritone saxophone sounds a major thirteenth lower than written.
-Moving "^^D" down a major thirteenth gives "^^F,,".
+B-flat soprano saxophone sounds a major second lower than written.
+Moving "__D" down a major second gives "__C".
 
 TASK 18 | mode=instrument_transposition | style=spn | answer_notation=scientific pitch notation
 --------------------------------------------------------------------------------
 PROMPT:
-A B-flat tenor saxophone part writes A##4. What sounding pitch is produced? Notes are written in scientific pitch notation. Give one note name in scientific pitch notation.
+For a B-flat bass clarinet part, convert the written note D##3 to sounding pitch. Notes are written in scientific pitch notation. Answer with one note name with octave in scientific pitch notation, for example, C#4 or Bbb2, preserving the diatonic spelling implied by the instrument's transposition interval; enharmonic substitutes are distinct.
 
 ANSWER:
-G##3
+C##2
 
 COT:
-B-flat tenor saxophone sounds a major ninth lower than written.
-Moving A##4 down a major ninth gives G##3.
+B-flat bass clarinet sounds a major ninth lower than written.
+Moving D##3 down a major ninth gives C##2.
 
 TASK 19 | mode=interval_construction | style=full_abc_score | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Construct the note a perfect octave below the note shown in this ABC score fragment:
+Use the note in this ABC score fragment as the starting note, then build a perfect octave below:
 L:1/8
-M:none
-K:C
-  __B, |] %1
-Interpret the score using its key signature. Then reduce the result to a note name without octave. Provide one note name without octave in compact ABC notation, with any accidental made explicit.
+M:2/4
+K:F
+  ^^G |] %1
+Interpret the score using its key signature. Then reduce the result to a note name without octave. Answer format: one note name without octave in compact ABC notation, for example, ^C, _B, or =F, with any accidental made explicit, preserving the theoretical spelling implied by the requested interval; enharmonic substitutes are distinct.
 
 ANSWER:
-__B
+^^G
 
 COT:
-The score note "__B," explicitly marks B double flat, so it represents "__B,".
-Start from "__B,".
-For an octave, the target letter is found by moving 7 letter steps down from B, which gives B.
+The score note "^^G" explicitly marks G double sharp, so it represents "^^G".
+Start from "^^G".
+For an octave, the target letter is found by moving 7 letter steps down from G, which gives G.
 The major/perfect reference form of an octave spans 12 semitones; a perfect octave must span 12 semitones.
-With letter B, the spelling that gives this semitone distance is "__B,,".
-The no-octave form of the result is "__B".
+With letter G, the spelling that gives this semitone distance is "^^G,".
+The no-octave form of the result is "^^G".
 
 TASK 20 | mode=interval_construction | style=compact_abc | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Build a major tenth above "__c". Notes are written in compact ABC notation. The answer is one full compact ABC pitch token.
+From "^^B", move an augmented thirteenth below. Notes are written in compact ABC notation. Provide one note name without octave in compact ABC notation, for example, ^C, _B, or =F, preserving the theoretical spelling implied by the requested interval; enharmonic substitutes are distinct.
 
 ANSWER:
-__e'
+^D
 
 COT:
-Start from "__c".
-For a tenth, the target letter is found by moving 9 letter steps up from C, which gives E.
-The major/perfect reference form of a tenth spans 16 semitones; a major tenth must span 16 semitones.
-With letter E, the spelling that gives this semitone distance is "__e'".
-So the answer is "__e'".
+Start from "^^B".
+For a thirteenth, the target letter is found by moving 12 letter steps down from B, which gives D.
+The major/perfect reference form of a thirteenth spans 21 semitones; an augmented thirteenth must span 22 semitones.
+With letter D, the spelling that gives this semitone distance is "^D".
+So the answer is "^D".
 
 TASK 21 | mode=interval_construction | style=spn | answer_notation=scientific pitch notation
 --------------------------------------------------------------------------------
 PROMPT:
-Find the note a minor third below Gbb. Notes are written in scientific pitch notation. Answer with one note name without octave in scientific pitch notation.
+Starting from A#3, build a double-diminished fifteenth above. Notes are written in scientific pitch notation. Give one note name with octave in scientific pitch notation, for example, C#4 or Bbb2, preserving the theoretical spelling implied by the requested interval; enharmonic substitutes are distinct.
 
 ANSWER:
-Ebb
+Ab5
 
 COT:
-Start from Gbb.
-For a third, the target letter is found by moving 2 letter steps down from G, which gives E.
-The major/perfect reference form of a third spans 4 semitones; a minor third must span 3 semitones.
-With letter E, the spelling that gives this semitone distance is Ebb.
-So the answer is Ebb.
+Start from A#3.
+For a fifteenth, the target letter is found by moving 14 letter steps up from A, which gives A.
+The major/perfect reference form of a fifteenth spans 24 semitones; a double-diminished fifteenth must span 22 semitones.
+With letter A, the spelling that gives this semitone distance is Ab5.
+So the answer is Ab5.
 
 TASK 22 | mode=transposition_chain | style=full_abc_score | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Transpose the note in this ABC score fragment:
+Use the note in this ABC score fragment as the start, then transpose down a perfect fourth, down a diminished octave, up a perfect fifteenth, down a double-augmented fifteenth:
 L:1/8
 M:3/4
-K:G
-  __F |] %1
-Apply these transpositions in order: up a double-augmented seventh, down a diminished sixth, up a perfect eleventh, up a major ninth.
-Interpret the score using its key signature. Give one note name without octave in compact ABC notation, with any accidental made explicit.
+K:Cm
+  ^G4 |] %1
+Interpret the score using its key signature. Give one note name without octave in compact ABC notation, for example, ^C, _B, or =F, with any accidental made explicit, preserving the theoretical spelling produced by the written interval sequence; enharmonic substitutes are distinct.
 
 ANSWER:
-^^D
+=D
 
 COT:
-The score note "__F" explicitly marks F double flat, overriding K:G, so it represents "__F".
-"__F" up a double-augmented seventh -> "=E"
-"=E" down a diminished sixth -> "^^G"
-"^^G" up a perfect eleventh -> "^^C"
-"^^C" up a major ninth -> "^^D"
+The score note "^G" explicitly marks G sharp, so it represents "^G".
+"^G" down a perfect fourth -> "^D"
+"^D" down a diminished octave -> "^^D"
+"^^D" up a perfect fifteenth -> "^^D"
+"^^D" down a double-augmented fifteenth -> "=D"
 
 TASK 23 | mode=transposition_chain | style=compact_abc | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Transpose "_G" up a diminished fifth, up an augmented second, down a double-diminished sixth, down a minor thirteenth. Notes are written in compact ABC notation. Give one note name without octave in compact ABC notation.
+Apply the ordered transposition sequence up a major fourteenth, up a double-augmented fifth, down a minor thirteenth, down a minor thirteenth starting from "__G". Notes are written in compact ABC notation. Provide one note name without octave in compact ABC notation, for example, ^C, _B, or =F, preserving the theoretical spelling produced by the written interval sequence; enharmonic substitutes are distinct.
 
 ANSWER:
-^^B
+^^G
 
 COT:
-"_G" up a diminished fifth -> "__D"
-"__D" up an augmented second -> "_E"
-"_E" down a double-diminished sixth -> "^^G"
-"^^G" down a minor thirteenth -> "^^B"
+"__G" up a major fourteenth -> "_F"
+"_F" up a double-augmented fifth -> "^C"
+"^C" down a minor thirteenth -> "^E"
+"^E" down a minor thirteenth -> "^^G"
 
 TASK 24 | mode=transposition_chain | style=spn | answer_notation=scientific pitch notation
 --------------------------------------------------------------------------------
 PROMPT:
-Apply the ordered transposition sequence up a perfect twelfth, down a major thirteenth, down a minor fourteenth, down a minor thirteenth starting from F##. Notes are written in scientific pitch notation. The answer is one note name without octave in scientific pitch notation.
+Begin on Cb and perform these transpositions in order: down a perfect fourth, down a diminished twelfth, up a double-diminished fourth, up a double-augmented fourteenth. Notes are written in scientific pitch notation. Give one note name without octave in scientific pitch notation, for example, C# or Bbb, preserving the theoretical spelling produced by the written interval sequence; enharmonic substitutes are distinct.
 
 ANSWER:
-A##
+E
 
 COT:
-F## up a perfect twelfth -> C##
-C## down a major thirteenth -> E#
-E# down a minor fourteenth -> F##
-F## down a minor thirteenth -> A##
+Cb down a perfect fourth -> Gb
+Gb down a diminished twelfth -> C
+C up a double-diminished fourth -> Fbb
+Fbb up a double-augmented fourteenth -> E

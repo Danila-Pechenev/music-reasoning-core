@@ -1,388 +1,396 @@
-Chord Roman Reasoning: 24 Curated Level-5 Examples
-==================================================
+Chord Roman Reasoning: 24 Selected Level-5 Examples
+===================================================
 
 TASK 01 | mode=chord_quality | style=full_abc_score
 --------------------------------------------------------------------------------
 PROMPT:
-What is the quality of the chord in this ABC score fragment:
-L:1/16
-M:12/8
-K:D
-  [__C__E__B__G]2 |] %1 as a chord-tone collection? Interpret the score using its key signature. Answer with exactly one label from: major triad, diminished triad, augmented triad, half-diminished seventh, dominant seventh, minor triad, minor-major seventh, fully diminished seventh, minor seventh, major seventh, augmented-major seventh.
+Classify the chord in this ABC score fragment:
+L:1/8
+M:none
+K:Fm
+  [^^C^A^^E^^F] |] %1 as a chord-tone collection. Interpret the score using its key signature. The expected answer is exactly one of these labels: dominant seventh, minor-major seventh, half-diminished seventh, major seventh, minor seventh, fully diminished seventh, augmented triad, major triad, diminished triad, augmented-major seventh, minor triad.
 
 ANSWER:
-major seventh
+minor-major seventh
 
 COT:
-The score note "__C" explicitly marks C double flat, overriding K:D, so it represents "__C".
-The score note "__E" explicitly marks E double flat, so it represents "__E".
-The score note "__B" explicitly marks B double flat, so it represents "__B".
-The score note "__G" explicitly marks G double flat, so it represents "__G".
-Arrange the chord tones by stacking thirds to get the root-position chord "__C"-"__E"-"__G"-"__B", with "__C" as the root.
-The intervals above the root are: from "__C" to "__E" is a major third, from "__C" to "__G" is a perfect fifth, from "__C" to "__B" is a major seventh.
-A seventh chord with a major third, a perfect fifth, and a major seventh above the root is a major seventh.
+The score note "^^C" explicitly marks C double sharp, so it represents "^^C".
+The score note "^A" explicitly marks A sharp, overriding K:Fm, so it represents "^A".
+The score note "^^E" explicitly marks E double sharp, overriding K:Fm, so it represents "^^E".
+The score note "^^F" explicitly marks F double sharp, so it represents "^^F".
+Arrange the chord tones by stacking thirds to get the root-position chord "^^F"-"^A"-"^^C"-"^^E", with "^^F" as the root.
+The intervals above the root are: from "^^F" to "^A" is a minor third, from "^^F" to "^^C" is a perfect fifth, from "^^F" to "^^E" is a major seventh.
+A seventh chord with a minor third, a perfect fifth, and a major seventh above the root is a minor-major seventh.
 
 TASK 02 | mode=chord_quality | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Classify "^^D"-"^^B"-"^^F" as a chord-tone collection. Notes are written in compact ABC notation. Answer with exactly one label from: minor-major seventh, fully diminished seventh, augmented-major seventh, major seventh, augmented triad, minor triad, major triad, half-diminished seventh, minor seventh, dominant seventh, diminished triad.
+Name the quality of "__D"-"__F"-"__B" as a chord-tone collection. Notes are written in compact ABC notation. The expected answer is exactly one of these labels: minor seventh, major seventh, augmented triad, dominant seventh, fully diminished seventh, major triad, half-diminished seventh, minor triad, diminished triad, minor-major seventh, augmented-major seventh.
 
 ANSWER:
 diminished triad
 
 COT:
-Arrange the chord tones by stacking thirds to get the root-position chord "^^B"-"^^D"-"^^F", with "^^B" as the root.
-The intervals above the root are: from "^^B" to "^^D" is a minor third, from "^^B" to "^^F" is a diminished fifth.
+Arrange the chord tones by stacking thirds to get the root-position chord "__B"-"__D"-"__F", with "__B" as the root.
+The intervals above the root are: from "__B" to "__D" is a minor third, from "__B" to "__F" is a diminished fifth.
 A triad with a minor third and a diminished fifth above the root is a diminished triad.
 
 TASK 03 | mode=chord_quality | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-Identify the quality of Bbb-Dbb-Fbb-Gbb as chord tones. Notes are written in scientific pitch notation. Use one of these labels: augmented-major seventh, minor-major seventh, major triad, minor triad, dominant seventh, minor seventh, diminished triad, fully diminished seventh, half-diminished seventh, augmented triad, major seventh. The answer is one label from that list.
+What is the quality of B#-G##-E##-C## as a chord-tone collection? Notes are written in scientific pitch notation. The expected answer is exactly one of these labels: augmented triad, major seventh, minor seventh, half-diminished seventh, minor triad, minor-major seventh, major triad, dominant seventh, augmented-major seventh, fully diminished seventh, diminished triad.
 
 ANSWER:
 dominant seventh
 
 COT:
-Arrange the chord tones by stacking thirds to get the root-position chord Gbb-Bbb-Dbb-Fbb, with Gbb as the root.
-The intervals above the root are: from Gbb to Bbb is a major third, from Gbb to Dbb is a perfect fifth, from Gbb to Fbb is a minor seventh.
+Arrange the chord tones by stacking thirds to get the root-position chord C##-E##-G##-B#, with C## as the root.
+The intervals above the root are: from C## to E## is a major third, from C## to G## is a perfect fifth, from C## to B# is a minor seventh.
 A seventh chord with a major third, a perfect fifth, and a minor seventh above the root is a dominant seventh.
 
 TASK 04 | mode=inversion | style=full_abc_score
 --------------------------------------------------------------------------------
 PROMPT:
-Given the chord in this ABC score fragment:
-L:1/8
+Analyze the inversion of the chord in this ABC score fragment:
+L:1/4
 M:12/8
-K:A
-  [__B__G__E]2 |] %1 as the chord-tone collection with "__B" in the bass, identify the inversion. Interpret the score using its key signature. The answer is one inversion label followed by figured bass.
-
-ANSWER:
-second inversion 6/4
-
-COT:
-The score note "__B" explicitly marks B double flat, so it represents "__B".
-The score note "__G" explicitly marks G double flat, overriding K:A, so it represents "__G".
-The score note "__E" explicitly marks E double flat, so it represents "__E".
-Arrange the chord tones by stacking thirds to get the root-position chord "__E"-"__G"-"__B", a minor triad.
-The bass note "__B" is chord member 3 above the root.
-For a 3-note chord, that gives second inversion 6/4.
-
-TASK 05 | mode=inversion | style=compact_abc
---------------------------------------------------------------------------------
-PROMPT:
-Treat "__D"-"__F"-"__B"-"_G" as an unordered collection of chord tones; the bass note is "__F". Notes are written in compact ABC notation. The expected answer is an inversion label plus figured bass.
+K:Bb
+  [__G__D__B__F]1 |] %1 as a chord-tone collection when "__F" is the bass note. Interpret the score using its key signature. The expected answer is an inversion label followed by figured bass, for example, root position 5/3.
 
 ANSWER:
 third inversion 4/2
 
 COT:
-Arrange the chord tones by stacking thirds to get the root-position chord "_G"-"__B"-"__D"-"__F", a fully diminished seventh.
+The score note "__G" explicitly marks G double flat, so it represents "__G".
+The score note "__D" explicitly marks D double flat, so it represents "__D".
+The score note "__B" explicitly marks B double flat, overriding K:Bb, so it represents "__B".
+The score note "__F" explicitly marks F double flat, so it represents "__F".
+Arrange the chord tones by stacking thirds to get the root-position chord "__G"-"__B"-"__D"-"__F", a dominant seventh.
 The bass note "__F" is chord member 4 above the root.
 For a 4-note chord, that gives third inversion 4/2.
+
+TASK 05 | mode=inversion | style=compact_abc
+--------------------------------------------------------------------------------
+PROMPT:
+Treat "^^F"-"^B"-"^^D" as an unordered collection of chord tones; the bass note is "^^D". Notes are written in compact ABC notation. The expected answer is an inversion label followed by figured bass, for example, root position 5/3.
+
+ANSWER:
+first inversion 6
+
+COT:
+Arrange the chord tones by stacking thirds to get the root-position chord "^B"-"^^D"-"^^F", a major triad.
+The bass note "^^D" is chord member 2 above the root.
+For a 3-note chord, that gives first inversion 6.
 
 TASK 06 | mode=inversion | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-Use Bbb-Dbb-Gbb as the unordered chord tones; the bass is Gbb. Notes are written in scientific pitch notation. Give one inversion label followed by figured bass.
+Analyze the inversion of F##-D##-B##-A## as a chord-tone collection when F## is the bass note. Notes are written in scientific pitch notation. The expected answer is an inversion label followed by figured bass, for example, root position 5/3.
 
 ANSWER:
-root position 5/3
+second inversion 4/3
 
 COT:
-Arrange the chord tones by stacking thirds to get the root-position chord Gbb-Bbb-Dbb, a major triad.
-The bass note Gbb is chord member 1 above the root.
-For a 3-note chord, that gives root position 5/3.
+Arrange the chord tones by stacking thirds to get the root-position chord B##-D##-F##-A##, a half-diminished seventh.
+The bass note F## is chord member 3 above the root.
+For a 4-note chord, that gives second inversion 4/3.
 
 TASK 07 | mode=open_close_voicing | style=full_abc_score
 --------------------------------------------------------------------------------
 PROMPT:
-Decide whether the chord in this ABC score fragment:
-L:1/4
+Classify the voicing of the chord in this ABC score fragment:
+L:1/8
 M:2/4
-K:Cm
-  [^A,,,^^C^^E^^G]1 |] %1 is in open or close voicing. Interpret the score using its key signature. The answer is exactly one of these labels: close voicing, open voicing.
-
-ANSWER:
-open voicing
-
-COT:
-The score note "^A,,," explicitly marks A sharp, overriding K:Cm, so it represents "^A,,,".
-The score note "^^C" explicitly marks C double sharp, so it represents "^^C".
-The score note "^^E" explicitly marks E double sharp, overriding K:Cm, so it represents "^^E".
-The score note "^^G" explicitly marks G double sharp, so it represents "^^G".
-The voiced chord is "^A,,,"-"^^C"-"^^E"-"^^G", an augmented-major seventh.
-The outer notes span 35 semitones.
-At least one adjacent pair skips over another chord member, so the voicing is open.
-So the answer is open voicing.
-
-TASK 08 | mode=open_close_voicing | style=compact_abc
---------------------------------------------------------------------------------
-PROMPT:
-Determine the voicing type of "^^C,,,"-"^^E,,,"-"^^G,,,". Notes are written in compact ABC notation. The answer is exactly one of these labels: open voicing, close voicing.
+K:Bb
+  [__A,__C__E_G]2 |] %1. Interpret the score using its key signature. Use one label from these options: open voicing, close voicing.
 
 ANSWER:
 close voicing
 
 COT:
-The voiced chord is "^^C,,,"-"^^E,,,"-"^^G,,,", a major triad.
-The outer notes span 7 semitones.
-The chord tones fit within one octave without skipping a chord member between adjacent upper notes.
+The score note "__A," explicitly marks A double flat, so it represents "__A,".
+The score note "__C" explicitly marks C double flat, so it represents "__C".
+The score note "__E" explicitly marks E double flat, overriding K:Bb, so it represents "__E".
+The score note "_G" explicitly marks G flat, so it represents "_G".
+The voiced chord is "__A,"-"__C"-"__E"-"_G", a minor-major seventh.
+The outer notes span 11 semitones.
+The chord tones fit within one octave without skipping a chord member between adjacent voices.
 So the answer is close voicing.
 
-TASK 09 | mode=open_close_voicing | style=spn
+TASK 08 | mode=open_close_voicing | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Cbb2-Gbb2-Bbb3-Ebb4 is in which voicing? Notes are written in scientific pitch notation. Choose from: close voicing, open voicing. The answer is one label from that list.
+Determine the voicing type of "^A,,,"-"^^C,,"-"^^E"-"^^G". Notes are written in compact ABC notation. The expected answer is exactly one of these labels: close voicing, open voicing.
 
 ANSWER:
 open voicing
 
 COT:
-The voiced chord is Cbb2-Gbb2-Bbb3-Ebb4, a major seventh.
-The outer notes span 28 semitones.
+The voiced chord is "^A,,,"-"^^C,,"-"^^E"-"^^G", an augmented-major seventh.
+The outer notes span 35 semitones.
+At least one adjacent pair skips over another chord member, so the voicing is open.
+So the answer is open voicing.
+
+TASK 09 | mode=open_close_voicing | style=spn
+--------------------------------------------------------------------------------
+PROMPT:
+For F##1-E##2-A##2-C##3, identify the voicing. Notes are written in scientific pitch notation. The expected answer is exactly one of these labels: close voicing, open voicing.
+
+ANSWER:
+open voicing
+
+COT:
+The voiced chord is F##1-E##2-A##2-C##3, a major seventh.
+The outer notes span 19 semitones.
 At least one adjacent pair skips over another chord member, so the voicing is open.
 So the answer is open voicing.
 
 TASK 10 | mode=enharmonic_chord_equivalence | style=full_abc_score | with_octave=True
 --------------------------------------------------------------------------------
 PROMPT:
-Are the chord in this ABC score fragment:
-L:1/8
-M:4/4
-K:Bb
-  [__D,,__F,,__A,,__C,]1 |] %1 and the chord in this ABC score fragment:
+Are the pitch-class contents of the chord in this ABC score fragment:
 L:1/4
 M:12/8
 K:Cm
-  [^B,,,^D,,^^F,,B,,]4 |] %1 equivalent after reducing to pitch classes? Interpret the score using its key signature. Respond with exactly one word: 'yes' or 'no'.
+  [C,,=E,,G,,=B,,]2 |] %1 and the chord in this ABC score fragment:
+L:1/4
+M:9/8
+K:C
+  [__D,,^^D,,^^F,,^^A,,] |] %1 enharmonically equivalent? Interpret the score using its key signature. Answer exactly 'yes' or 'no'.
 
 ANSWER:
 yes
 
 COT:
+In K:Cm, C has no key-signature accidental, so the score note "C,," represents "=C,,".
+The score note "=E,," explicitly marks E natural, overriding K:Cm, so it represents "=E,,".
+In K:Cm, G has no key-signature accidental, so the score note "G,," represents "=G,,".
+The score note "=B,," explicitly marks B natural, overriding K:Cm, so it represents "=B,,".
 The score note "__D,," explicitly marks D double flat, so it represents "__D,,".
-The score note "__F,," explicitly marks F double flat, so it represents "__F,,".
-The score note "__A,," explicitly marks A double flat, so it represents "__A,,".
-The score note "__C," explicitly marks C double flat, so it represents "__C,".
-The score note "^B,,," explicitly marks B sharp, overriding K:Cm, so it represents "^B,,,".
-The score note "^D,," explicitly marks D sharp, so it represents "^D,,".
+The score note "^^D,," explicitly marks D double sharp, so it represents "^^D,,".
 The score note "^^F,," explicitly marks F double sharp, so it represents "^^F,,".
-The key signature K:Cm makes B flat, so the score note "B,," represents "_B,,".
-The first chord has pitch classes [0, 3, 7, 10].
-The second chord has pitch classes [0, 3, 7, 10].
+The score note "^^A,," explicitly marks A double sharp, so it represents "^^A,,".
+The first chord has pitch classes [0, 4, 7, 11].
+The second chord has pitch classes [0, 4, 7, 11].
 The pitch-class sets match, so the answer is yes.
 
 TASK 11 | mode=enharmonic_chord_equivalence | style=compact_abc | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-Are "^^A"-"^^C"-"^^F" and "_F"-"__C"-"__A" equivalent after reducing to pitch classes? Notes are written in compact ABC notation. Respond with exactly one word: 'yes' or 'no'.
+Are "C"-"A"-"G"-"E" and "^^E"-"^^C"-"^^G"-"^A" equivalent after reducing to pitch classes? Notes are written in compact ABC notation. The expected answer is one word: 'yes' or 'no'.
 
 ANSWER:
 no
 
 COT:
-The first chord has pitch classes [2, 7, 11].
-The second chord has pitch classes [4, 7, 10].
+The first chord has pitch classes [0, 4, 7, 9].
+The second chord has pitch classes [2, 6, 9, 10].
 The pitch-class sets differ, so the answer is no.
 
-TASK 12 | mode=enharmonic_chord_equivalence | style=spn | with_octave=True
+TASK 12 | mode=enharmonic_chord_equivalence | style=spn | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-Check whether Gb5-Bbb5-Dbb6-Fb6 and B##5-D##6-F##6-A##6 are enharmonically equivalent as pitch-class chords. Notes are written in scientific pitch notation. Answer exactly 'yes' or 'no'.
-
-ANSWER:
-no
-
-COT:
-The first chord has pitch classes [0, 4, 6, 9].
-The second chord has pitch classes [1, 4, 7, 11].
-The pitch-class sets differ, so the answer is no.
-
-TASK 13 | mode=chromatic_chord_label | style=full_abc_score | with_octave=True
---------------------------------------------------------------------------------
-PROMPT:
-For G minor, choose the label for the chord in this ABC score fragment:
-L:1/8
-M:2/4
-K:Gm
-  [ega^c']2 |] %1. Interpret the score using its key signature. The expected answer is exactly one of these labels: French augmented sixth, German augmented sixth, Italian augmented sixth, Neapolitan sixth.
-
-ANSWER:
-French augmented sixth
-
-COT:
-The key signature K:Gm makes E flat, so the score note "e" represents "_e".
-In K:Gm, G has no key-signature accidental, so the score note "g" represents "=g".
-In K:Gm, A has no key-signature accidental, so the score note "a" represents "=a".
-The score note "^c'" explicitly marks C sharp, so it represents "^c'".
-Relative to tonic G, the scale-degree formula is b6-1-2-#4.
-The formula b6-1-2-#4 identifies a French augmented sixth.
-
-TASK 14 | mode=chromatic_chord_label | style=compact_abc | with_octave=False
---------------------------------------------------------------------------------
-PROMPT:
-For Db major, choose the label for "G"-"__B"-"_D" as a chord-tone collection with bass "__B". Notes are written in compact ABC notation. The answer is exactly one of these labels: Neapolitan sixth, Italian augmented sixth, German augmented sixth, French augmented sixth.
-
-ANSWER:
-Italian augmented sixth
-
-COT:
-Arrange the chord tones from the specified bass upward as "__B"-"_D"-"G".
-Relative to tonic Db, the scale-degree formula is b6-1-#4.
-The formula b6-1-#4 identifies an Italian augmented sixth.
-
-TASK 15 | mode=chromatic_chord_label | style=spn | with_octave=False
---------------------------------------------------------------------------------
-PROMPT:
-In Cb major, what chromatic label fits F-Abb-Cb-Ebb as a chord-tone collection with bass Abb? Notes are written in scientific pitch notation. The answer is exactly one of these labels: Neapolitan sixth, French augmented sixth, Italian augmented sixth, German augmented sixth.
-
-ANSWER:
-German augmented sixth
-
-COT:
-Arrange the chord tones from the specified bass upward as Abb-Cb-Ebb-F.
-Relative to tonic Cb, the scale-degree formula is b6-1-b3-#4.
-The formula b6-1-b3-#4 identifies a German augmented sixth.
-
-TASK 16 | mode=chord_membership | style=full_abc_score | with_octave=True
---------------------------------------------------------------------------------
-PROMPT:
-For the key context E natural minor, test the chord in this ABC score fragment:
-L:1/4
-M:4/4
-K:Dm
-  [A,,C,^^E,G,] |] %1. Interpret the score using its key signature. Answer exactly 'yes' or 'no'.
-
-ANSWER:
-no
-
-COT:
-In K:Dm, A has no key-signature accidental, so the score note "A,," represents "=A,,".
-In K:Dm, C has no key-signature accidental, so the score note "C," represents "=C,".
-The score note "^^E," explicitly marks E double sharp, so it represents "^^E,".
-In K:Dm, G has no key-signature accidental, so the score note "G," represents "=G,".
-The E natural minor collection is "=E", "^F", "=G", "=A", "=B", "=C", "=D".
-The chord tones are "=A", "=C", "^^E", "=G".
-At least one chord tone is outside the collection, so the answer is no.
-
-TASK 17 | mode=chord_membership | style=compact_abc | with_octave=False
---------------------------------------------------------------------------------
-PROMPT:
-Does "_G", "_E", "_C" use only notes from Ab natural minor? Notes are written in compact ABC notation. The expected answer is one word: 'yes' or 'no'.
+Are G##-E##-C##-A# and Ebb-Gb-A-Cbb enharmonically equivalent as pitch-class chords? Notes are written in scientific pitch notation. Answer exactly 'yes' or 'no'.
 
 ANSWER:
 yes
 
 COT:
-The Ab natural minor collection is "_A", "_B", "_C", "_D", "_E", "_F", "_G".
-The chord tones are "_C", "_E", "_G".
-Every chord tone belongs to the collection, so the answer is yes.
+The first chord has pitch classes [2, 6, 9, 10].
+The second chord has pitch classes [2, 6, 9, 10].
+The pitch-class sets match, so the answer is yes.
 
-TASK 18 | mode=chord_membership | style=spn | with_octave=True
+TASK 13 | mode=chromatic_chord_label | style=full_abc_score | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-For the key context A# natural minor, test D#4, F##4, A#4, C#5. Notes are written in scientific pitch notation. The expected answer is one word: 'yes' or 'no'.
+In Gb major, identify the chromatic label for the chord in this ABC score fragment:
+L:1/8
+M:4/4
+K:Gb
+  [=C__EG__B]2 |] %1 as a chord-tone collection with bass "__E". Interpret the score using its key signature. Choose one label from: Neapolitan sixth, Italian augmented sixth, French augmented sixth, German augmented sixth.
+
+ANSWER:
+German augmented sixth
+
+COT:
+The score note "=C" explicitly marks C natural, overriding K:Gb, so it represents "=C".
+The score note "__E" explicitly marks E double flat, overriding K:Gb, so it represents "__E".
+The key signature K:Gb makes G flat, so the score note "G" represents "_G".
+The score note "__B" explicitly marks B double flat, overriding K:Gb, so it represents "__B".
+Arrange the chord tones from the specified bass upward as "__E"-"_G"-"__B"-"=C".
+Relative to tonic Gb, the scale-degree formula is b6-1-b3-#4.
+The formula b6-1-b3-#4 identifies a German augmented sixth.
+
+TASK 14 | mode=chromatic_chord_label | style=compact_abc | with_octave=False
+--------------------------------------------------------------------------------
+PROMPT:
+In the key of Ab minor, classify "_D"-"_F"-"__B" as a chord-tone collection with bass note "_D". Notes are written in compact ABC notation. The expected answer is exactly one of these labels: German augmented sixth, French augmented sixth, Neapolitan sixth, Italian augmented sixth.
+
+ANSWER:
+Neapolitan sixth
+
+COT:
+Arrange the chord tones from the specified bass upward as "_D"-"_F"-"__B".
+Relative to tonic Ab, the scale-degree formula is 4-b6-b2.
+The formula 4-b6-b2 identifies a Neapolitan sixth.
+
+TASK 15 | mode=chromatic_chord_label | style=spn | with_octave=False
+--------------------------------------------------------------------------------
+PROMPT:
+Using Db major, name the chromatic chord-tone collection represented by Db-Eb-G-Bbb with Bbb in the bass. Notes are written in scientific pitch notation. Choose one label from: Italian augmented sixth, Neapolitan sixth, German augmented sixth, French augmented sixth.
+
+ANSWER:
+French augmented sixth
+
+COT:
+Arrange the chord tones from the specified bass upward as Bbb-Db-Eb-G.
+Relative to tonic Db, the scale-degree formula is b6-1-2-#4.
+The formula b6-1-2-#4 identifies a French augmented sixth.
+
+TASK 16 | mode=chord_membership | style=full_abc_score | with_octave=False
+--------------------------------------------------------------------------------
+PROMPT:
+Does the chord in this ABC score fragment:
+L:1/4
+M:3/4
+K:D#m
+  [F__BDA] |] %1 fit D# natural minor as a collection of chord tones? Interpret the score using its key signature. Judge membership by written note spelling; enharmonic substitutes are distinct. Respond with one lowercase word: 'yes' or 'no'.
 
 ANSWER:
 no
 
 COT:
-The A# natural minor collection is A#, B#, C#, D#, E#, F#, G#.
-The chord tones are D#, F##, A#, C#.
+The key signature K:D#m makes F sharp, so the score note "F" represents "^F".
+The score note "__B" explicitly marks B double flat, so it represents "__B".
+The key signature K:D#m makes D sharp, so the score note "D" represents "^D".
+The key signature K:D#m makes A sharp, so the score note "A" represents "^A".
+The D# natural minor collection is "^D", "^E", "^F", "^G", "^A", "=B", "^C".
+The chord tones are "__B", "^D", "^F", "^A".
 At least one chord tone is outside the collection, so the answer is no.
 
-TASK 19 | mode=roman_numeral_from_chord | style=full_abc_score | with_octave=True
+TASK 17 | mode=chord_membership | style=compact_abc | with_octave=True
 --------------------------------------------------------------------------------
 PROMPT:
-Find the compact Roman numeral for the chord in this ABC score fragment:
-L:1/8
-M:3/4
-K:Eb
-  [=e^^f^a^c']1 |] %1 in E major. Interpret the score using its key signature. The expected answer is one compact Roman numeral with closed-up figured bass, for example, V65/V.
+Determine whether "^C,", "^E,", "^G,", "B," is diatonic to D# natural minor. Notes are written in compact ABC notation. Judge membership by written note spelling; enharmonic substitutes are distinct. Respond with one lowercase word: 'yes' or 'no'.
 
 ANSWER:
-viio42/iii
+yes
 
 COT:
-The score note "=e" explicitly marks E natural, overriding K:Eb, so it represents "=e".
-The score note "^^f" explicitly marks F double sharp, so it represents "^^f".
-The score note "^a" explicitly marks A sharp, overriding K:Eb, so it represents "^a".
-The score note "^c'" explicitly marks C sharp, so it represents "^c'".
-Arrange the chord tones by stacking thirds: "^^F"-"^A"-"^C"-"=E". The root is "^^F".
-The intervals above the root are: from "^^F" to "^A", a minor third; from "^^F" to "^C", a diminished fifth; from "^^F" to "=E", a diminished seventh. Therefore, the chord is a diminished seventh chord.
-In E major, a diminished seventh chord on "^^F" functions as local viio that resolves to iii. Applied function is written with a slash, so the Roman base is viio/iii.
-The bass "=e" is the chordal seventh, so the chord is in third inversion and the Roman suffix is 42.
-Inserting suffix 42 before the slash in viio/iii gives viio42/iii.
+The D# natural minor collection is "^D", "^E", "^F", "^G", "^A", "B", "^C".
+The chord tones are "^C", "^E", "^G", "B".
+Every chord tone belongs to the collection, so the answer is yes.
+
+TASK 18 | mode=chord_membership | style=spn | with_octave=False
+--------------------------------------------------------------------------------
+PROMPT:
+Does A, Ebb, C fit E natural minor as a collection of chord tones? Notes are written in scientific pitch notation. Judge membership by written note spelling; enharmonic substitutes are distinct. The expected answer is one word: 'yes' or 'no'.
+
+ANSWER:
+no
+
+COT:
+The E natural minor collection is E, F#, G, A, B, C, D.
+The chord tones are A, C, Ebb.
+At least one chord tone is outside the collection, so the answer is no.
+
+TASK 19 | mode=roman_numeral_from_chord | style=full_abc_score | with_octave=False
+--------------------------------------------------------------------------------
+PROMPT:
+In B major, analyze the chord in this ABC score fragment:
+L:1/4
+M:12/8
+K:B
+  [^^CA^E]4 |] %1, with "^E" in the bass, as an applied chord tonicizing the supplied resolution chord: the chord in this ABC score fragment:
+L:1/16
+M:12/8
+K:B
+  [DFA]4 |] %1. Interpret the score using its key signature. The expected answer is one compact Roman numeral with closed-up figured bass, for example, V65/V.
+
+ANSWER:
+V64/iii
+
+COT:
+The score note "^^C" explicitly marks C double sharp, overriding K:B, so it represents "^^C".
+The key signature K:B makes A sharp, so the score note "A" represents "^A".
+The score note "^E" explicitly marks E sharp, so it represents "^E".
+The key signature K:B makes D sharp, so the score note "D" represents "^D".
+The key signature K:B makes F sharp, so the score note "F" represents "^F".
+The key signature K:B makes A sharp, so the score note "A" represents "^A".
+Arrange the chord tones by stacking thirds: "^A"-"^^C"-"^E". The root is "^A".
+The intervals above the root are: from "^A" to "^^C", a major third; from "^A" to "^E", a perfect fifth. Therefore, the chord is a major triad.
+The resolution chord stacks as "^D"-"^F"-"^A". Its root is "^D", and it is a minor triad, identifying it as iii in B major. The source chord is a major triad on "^A"; it therefore functions as local V of iii, so the Roman base is V/iii.
+The bass "^E" is the chordal fifth, so the chord is in second inversion and the Roman suffix is 64.
+Inserting suffix 64 before the slash in V/iii gives V64/iii.
 
 TASK 20 | mode=roman_numeral_from_chord | style=compact_abc | with_octave=False
 --------------------------------------------------------------------------------
 PROMPT:
-In the key of Cb major, Roman-numeral analyze "_F"-"_D"-"_B" as chord tones over "_B". Notes are written in compact ABC notation. The expected answer is one compact Roman numeral with closed-up figured bass, for example, V65/V.
+Using A major, label "B"-"D"-"A"-"^F" as chord tones with "B" in the bass. Notes are written in compact ABC notation. Give one compact Roman numeral with any figured-bass digits closed up, for example, viio42 or IV64.
 
 ANSWER:
-viio
+ii7
 
 COT:
-Arrange the chord tones by stacking thirds: "_B"-"_D"-"_F". The root is "_B".
-The intervals above the root are: from "_B" to "_D", a minor third; from "_B" to "_F", a diminished fifth. Therefore, the chord is a diminished triad.
-In Cb major, root "_B" is scale degree 7; with this quality, the Roman base is viio.
-The bass "_B" is the chordal root, so the chord is in root position and there is no triad suffix.
-Combining the base viio with no suffix gives viio.
+Arrange the chord tones by stacking thirds: "B"-"D"-"^F"-"A". The root is "B".
+The intervals above the root are: from "B" to "D", a minor third; from "B" to "^F", a perfect fifth; from "B" to "A", a minor seventh. Therefore, the chord is a minor seventh chord.
+In A major, root "B" is scale degree 2; with this quality, the Roman base is ii.
+The bass "B" is the chordal root, so the chord is in root position and the Roman suffix is 7.
+Combining the base ii with suffix 7 gives ii7.
 
 TASK 21 | mode=roman_numeral_from_chord | style=spn | with_octave=True
 --------------------------------------------------------------------------------
 PROMPT:
-For D# minor, what Roman numeral describes A#4-C#5-E5-F##5? Notes are written in scientific pitch notation. The expected answer is one compact Roman numeral with closed-up figured bass, for example, V65/V.
+In G# minor, B4-C##5-E#5-G#5 functions as an applied chord that tonicizes the supplied resolution chord: D#5-F##5-A#5. Give its Roman numeral. Notes are written in scientific pitch notation. Answer format: one compact Roman numeral with figured-bass digits closed up, for example, V65/V.
 
 ANSWER:
-viio65/iv
+viio42/V
 
 COT:
-Arrange the chord tones by stacking thirds: F##-A#-C#-E. The root is F##.
-The intervals above the root are: from F## to A#, a minor third; from F## to C#, a diminished fifth; from F## to E, a diminished seventh. Therefore, the chord is a diminished seventh chord.
-In D# minor, a diminished seventh chord on F## functions as local viio that resolves to iv. Applied function is written with a slash, so the Roman base is viio/iv.
-The bass A#4 is the chordal third, so the chord is in first inversion and the Roman suffix is 65.
-Inserting suffix 65 before the slash in viio/iv gives viio65/iv.
+Arrange the chord tones by stacking thirds: C##-E#-G#-B. The root is C##.
+The intervals above the root are: from C## to E#, a minor third; from C## to G#, a diminished fifth; from C## to B, a diminished seventh. Therefore, the chord is a diminished seventh chord.
+The resolution chord stacks as D#-F##-A#. Its root is D#, and it is a major triad, identifying it as V in G# minor. The source chord is a diminished seventh chord on C##; it therefore functions as local viio of V, so the Roman base is viio/V.
+The bass B4 is the chordal seventh, so the chord is in third inversion and the Roman suffix is 42.
+Inserting suffix 42 before the slash in viio/V gives viio42/V.
 
 TASK 22 | mode=chord_from_roman_numeral | answer_notation=scientific pitch notation
 --------------------------------------------------------------------------------
 PROMPT:
-In C# major, give the chord tones for V65/iii. Answer with note names from bass upward in scientific pitch notation, separated by hyphens.
+In the key of Eb minor, realize viio65/VI as chord tones. Give one bass-upward sequence of note names without octave numbers or markers in standard note-name notation; use hyphens between note names, for example, C#-E-G. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.
 
 ANSWER:
-D##-F##-A#-B#
+Db-Fb-Abb-Bb
 
 COT:
-The Roman base V/iii means local V applied to iii in C# major. That gives a dominant seventh chord on root B#.
-A 4-note dominant seventh chord is built in stacked thirds as B#-D##-F##-A#.
-The suffix 65 in V65/iii means first inversion; therefore, the chordal third, D##, is in the bass.
-Writing the chord from bass upward gives D##-F##-A#-B#.
+The Roman base viio/VI means local viio applied to VI in Eb minor. That gives a diminished seventh chord on root Bb.
+A 4-note diminished seventh chord is built in stacked thirds as Bb-Db-Fb-Abb.
+The suffix 65 in viio65/VI means first inversion; therefore, the chordal third, Db, is in the bass.
+Writing the chord from bass upward gives Db-Fb-Abb-Bb.
 
 TASK 23 | mode=chord_from_roman_numeral | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Using G# minor, list the chord tones of V6. The expected answer is a hyphen-separated bass-upward note sequence in compact ABC notation, with any accidental made explicit, for example, ^C-=E-G.
+In the key of D minor, realize viio64 as chord tones. Give one bass-upward sequence of note names without octave numbers or markers in compact ABC notation, with any accidental made explicit; use hyphens between note names, for example, ^C-=E-G. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.
 
 ANSWER:
-^^F-^A-^D
+=G-^C-=E
 
 COT:
-In G# minor, Roman base V uses scale degree 5, so the root is "^D" and the chord quality is a major triad.
-A 3-note major triad is built in stacked thirds as "^D"-"^^F"-"^A".
-The suffix 6 in V6 means first inversion; therefore, the chordal third, "^^F", is in the bass.
-Writing the chord from bass upward gives "^^F"-"^A"-"^D".
+In D minor, Roman base viio uses scale degree 7, so the root is "^C" and the chord quality is a diminished triad.
+A 3-note diminished triad is built in stacked thirds as "^C"-"=E"-"=G".
+The suffix 64 in viio64 means second inversion; therefore, the chordal fifth, "=G", is in the bass.
+Writing the chord from bass upward gives "=G"-"^C"-"=E".
 
 TASK 24 | mode=chord_from_roman_numeral | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------
 PROMPT:
-Write the notes produced by viio43/IV in Cb major. Give one bass-upward note sequence in compact ABC notation; use hyphens between note names, for example, ^C-=E-G.
+In Db major, give the chord tones for viio6/vi. The expected answer is a hyphen-separated bass-upward sequence of note names without octave numbers or markers in compact ABC notation, with any accidental made explicit, for example, ^C-=E-G. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.
 
 ANSWER:
-__B-__D-_E-_G
+=C-_E-=A
 
 COT:
-The Roman base viio/IV means local viio applied to IV in Cb major. That gives a diminished seventh chord on root "_E".
-A 4-note diminished seventh chord is built in stacked thirds as "_E"-"_G"-"__B"-"__D".
-The suffix 43 in viio43/IV means second inversion; therefore, the chordal fifth, "__B", is in the bass.
-Writing the chord from bass upward gives "__B"-"__D"-"_E"-"_G".
+The Roman base viio/vi means local viio applied to vi in Db major. That gives a diminished triad on root "=A".
+A 3-note diminished triad is built in stacked thirds as "=A"-"=C"-"_E".
+The suffix 6 in viio6/vi means first inversion; therefore, the chordal third, "=C", is in the bass.
+Writing the chord from bass upward gives "=C"-"_E"-"=A".
