@@ -8,6 +8,7 @@ from music21 import roman as music21_roman
 
 from reasoning_core.template import Problem
 from music_reasoning_tasks._music_theory import (
+    ABCContext,
     AnswerNormalizer,
     COMPACT_ABC_STYLE,
     FULL_ABC_SCORE_STYLE,
@@ -291,9 +292,22 @@ def test_chord_from_roman_answer_notation_follows_prompt_style():
         assert example.metadata.answer_notation == answer_notation
         assert example.metadata.answer_explicit_accidentals is explicit_accidentals
         assert '"' not in example.answer
+        assert "without octave numbers or markers" in example.prompt
         assert task.score_answer(example.answer, example) == 1.0
         if explicit_accidentals:
             assert "with any accidental made explicit" in example.prompt
+        if style == SPN_STYLE:
+            assert "standard note-name notation" in example.prompt
+            assert "scientific pitch notation" not in example.prompt
+
+
+@pytest.mark.parametrize("mode", ["chord_membership", "chord_from_roman_numeral"])
+def test_spelling_sensitive_chord_prompts_distinguish_enharmonic_substitutes(mode):
+    random.seed(9400 + MODE_NAMES.index(mode))
+    example = ChordRomanReasoning(ChordRomanConfig(mode=mode)).generate_example(level=5)
+
+    assert "written note spelling" in example.prompt or "theoretical chord spelling" in example.prompt
+    assert "enharmonic substitutes are distinct" in example.prompt
 
 
 def test_score_answer_normalizes_roman_and_note_sequence_answers():
@@ -316,6 +330,9 @@ def test_score_answer_normalizes_roman_and_note_sequence_answers():
     assert task.score_answer("half diminished seventh", _problem("half-diminished seventh", answer_kind="label")) == 1.0
     assert task.score_answer("third inversion, 4/2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
     assert task.score_answer("third inversion 2", _problem("third inversion 4/2", answer_kind="text")) == 1.0
+    assert task.score_answer("first inversion 6/3", _problem("first inversion 6", answer_kind="text")) == 1.0
+    assert task.score_answer("firstinversion 6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
+    assert task.score_answer("first inversion6/3", _problem("first inversion 6", answer_kind="text")) == 0.0
     assert task.score_answer("closed voicing", _problem("close voicing", answer_kind="text")) == 1.0
     assert AnswerNormalizer.text("Major   Triad.") == "major triad"
 
@@ -428,6 +445,58 @@ def test_secondary_roman_pools_parse_in_all_supported_keys(mode, triad_pool, sev
             notes = [Music21Adapter.note_from_pitch(pitch) for pitch in rn.pitches]
 
             assert all(abs(note.accidental) <= 2 for note in notes)
+
+
+def test_roman_context_allows_every_supported_secondary_analysis(monkeypatch):
+    task = ChordRomanReasoning(ChordRomanConfig(mode="roman_numeral_from_chord"))
+    major_key = music21_key.Key("D")
+    monkeypatch.setattr(task, "_sample_key_context", lambda: ("D", "major", major_key))
+    monkeypatch.setattr(task, "_sample_roman_figure", lambda _mode: "V64/IV")
+
+    _tonic, _mode, rn, _notes = task._sample_roman_context()
+
+    assert AnswerNormalizer.roman(rn.figure) == "V64/IV"
+
+
+def test_secondary_roman_analysis_includes_resolution_context(monkeypatch):
+    task = ChordRomanReasoning(ChordRomanConfig(mode="roman_numeral_from_chord"))
+    key_context = music21_key.Key("E", "minor")
+    monkeypatch.setattr(task.config, "random_style", lambda: SPN_STYLE)
+
+    def sample_context(with_octave=False):
+        rn = music21_roman.RomanNumeral("V43/VII", key_context)
+        notes = [
+            Music21Adapter.note_from_pitch(pitch, with_octave=with_octave)
+            for pitch in rn.pitches
+        ]
+        return "E", "minor", rn, notes
+
+    monkeypatch.setattr(task, "_sample_roman_context", sample_context)
+    example = task._generate_roman_numeral_from_chord()
+
+    assert example.answer == "V43/VII"
+    assert "resolv" in example.metadata.prompt.lower()
+    assert example.metadata.resolution_roman_figure == "VII"
+    assert _pitch_classes(example.metadata.resolution_chord_notes) == {2, 6, 9}
+    assert "The resolution chord stacks as" in example.metadata.cot
+    assert "identifying it as VII in E minor" in example.metadata.cot
+
+
+@pytest.mark.parametrize(
+    "mode",
+    ["chromatic_chord_label", "chord_membership", "roman_numeral_from_chord"],
+)
+def test_full_abc_key_matches_the_analytical_key(mode):
+    for seed in range(9500, 9520):
+        random.seed(seed + MODE_NAMES.index(mode))
+        config = ChordRomanConfig(mode=mode)
+        config.random_style = lambda: FULL_ABC_SCORE_STYLE
+        example = ChordRomanReasoning(config).generate_example(level=5)
+        tonic, analytical_mode = example.metadata.key.split(maxsplit=1)
+        expected_key = ABCContext.analytical_key(tonic, analytical_mode)
+        score_keys = set(re.findall(r"^K:(\S+)$", example.prompt, flags=re.MULTILINE))
+
+        assert score_keys == {expected_key}
 
 
 def test_roman_inversion_suffixes_attach_to_chord_part():

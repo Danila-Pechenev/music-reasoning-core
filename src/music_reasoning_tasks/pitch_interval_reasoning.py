@@ -82,11 +82,11 @@ INTERVAL_NAME_SCORE_OPENERS = (
     "Identify the interval between the two notated pitches in this ABC score fragment:\n{score}",
 )
 INTERVAL_NAME_TAILS = (
-    "Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound.",
-    "Give one interval name, preserving the written interval number rather than reducing compound intervals to simple ones.",
-    "Answer with one interval name, preserving the written simple or compound interval number.",
-    "The expected answer is one interval name with the written interval number preserved.",
-    "Provide one interval name, using the simple or compound number shown by the written notes.",
+    "Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.",
+    "Give one interval name, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.",
+    "Answer with one interval name, preserving the written simple or compound interval number and treating enharmonically equivalent interval names as distinct.",
+    "The expected answer is one interval name with the written interval number preserved; enharmonically equivalent interval names are distinct.",
+    "Provide one interval name, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.",
 )
 INTERVAL_ARITHMETIC_SINGLE_OPENERS = {
     "add": (
@@ -120,11 +120,11 @@ INTERVAL_ARITHMETIC_CHAIN_OPENERS = (
     "Compute the result of this interval chain starting at {start_interval}: {operations}.",
 )
 INTERVAL_ONLY_TAILS = (
-    "Answer format: one interval name for the final result, for example, major sixth or diminished tenth.",
-    "Give one interval name for the final result, using the resulting interval number.",
-    "Answer with one interval name for the final result.",
-    "Provide a single interval name for the final result, for example, diminished fourth or major tenth.",
-    "The expected answer is one interval name for the final result.",
+    "Answer format: one interval name for the final result, for example, major sixth or diminished tenth. Preserve the theoretical interval spelling; enharmonically equivalent interval names are distinct.",
+    "Give one interval name for the final result, using the resulting interval number and preserving the theoretical interval spelling; enharmonic substitutes are distinct.",
+    "Answer with one interval name for the final result. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.",
+    "Provide a single interval name for the final result, for example, diminished fourth or major tenth. Preserve the theoretical interval spelling; enharmonic substitutes are distinct.",
+    "The expected answer is one interval name for the final result, with the theoretical interval spelling preserved; enharmonic substitutes are distinct.",
 )
 PITCH_COUNT_OPENERS = (
     "Under pitch-class equivalence, how many distinct pitch classes are in {notes}?",
@@ -158,11 +158,11 @@ ENHARMONIC_INTERVAL_OPENERS = (
     "Are {first} and {second} enharmonically equivalent intervals?",
     "Do {first} and {second} represent enharmonically equivalent intervals?",
     "Compare {first} and {second}: are the intervals enharmonically equivalent?",
-    "Do the corresponding endpoint pitches of {first} and {second} match enharmonically?",
+    "Assess {first} and {second} for enharmonic interval equivalence.",
     "Check whether {first} and {second} are enharmonically equivalent written intervals.",
-    "Do {first} and {second} describe intervals with matching sounding endpoints?",
+    "Is the written interval {first} enharmonically equivalent to {second}?",
     "Are the two written intervals {first} and {second} enharmonically the same?",
-    "Compare the endpoint pitches of {first} and {second}. Are the intervals enharmonically equivalent?",
+    "Determine whether the written intervals {first} and {second} are enharmonically equivalent.",
 )
 ENHARMONIC_INTERVAL_SCORE_OPENERS = (
     "Is the interval in this ABC score fragment:\n{first}\nenharmonically equivalent to the interval in this ABC score fragment:\n{second}?",
@@ -170,7 +170,7 @@ ENHARMONIC_INTERVAL_SCORE_OPENERS = (
     "Do these two ABC score fragments show enharmonically equivalent intervals?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
     "After interpreting the key signatures, are the intervals in these ABC score fragments enharmonically equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
     "Compare the two notated intervals below for enharmonic equivalence.\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
-    "Do the corresponding endpoint pitches match in these two ABC interval fragments?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "Are the written intervals in these two ABC fragments enharmonically equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
 )
 ABC_PAIR_YES_NO_TAILS = (
     "Interpret each ABC score using its key signature. Answer format: 'yes' or 'no'.",
@@ -557,17 +557,23 @@ class PitchIntervalReasoning(Task):
 
         label = random.choice(INTERVAL_CLASS_LABELS)
         if label == "chromatic alteration":
-            first = Note.random(self.config, with_octave=False, accidental_limit=accidental_limit)
-            if scale.contains(first):
-                second = random.choice(scale.chromatic_alterations())
+            for _ in range(GENERATION_RETRY_LIMIT):
+                first = Note.random(self.config, with_octave=False, accidental_limit=accidental_limit)
+                if scale.contains(first):
+                    second = random.choice(scale.chromatic_alterations())
+                else:
+                    second = Note.random(self.config, with_octave=False, accidental_limit=accidental_limit)
+                if not self._is_perfect_fourth(first, second):
+                    break
             else:
-                second = Note.random(self.config, with_octave=False, accidental_limit=accidental_limit)
+                raise ValueError("Could not sample a chromatic relation other than a perfect fourth.")
         else:
             candidates = [
                 (first, second)
                 for first in scale.degrees
                 for second in scale.degrees
                 if not first.same_spelling(second)
+                and not self._is_perfect_fourth(first, second)
                 and scale.relation_label(first, second) == label
             ]
             first, second = random.choice(candidates)
@@ -730,6 +736,10 @@ class PitchIntervalReasoning(Task):
             with_octave=True,
             explicit_accidentals=force_answer_natural,
         )
+        answer_format += (
+            ", preserving the diatonic spelling implied by the instrument's transposition interval; "
+            "enharmonic substitutes are distinct"
+        )
         instrument_article_lower = TextFormatter.article(instrument)
         instrument_article = TextFormatter.capitalize_initial(instrument_article_lower)
         if style == FULL_ABC_SCORE_STYLE:
@@ -774,6 +784,12 @@ class PitchIntervalReasoning(Task):
             answer_notation=answer_notation,
             style=style,
         )
+
+    @staticmethod
+    def _is_perfect_fourth(first: Note, second: Note) -> bool:
+        """Return whether two octave-free notes form an ascending perfect fourth."""
+        interval = Interval.between(first, second, without_octaves=True)
+        return interval.quality == "perfect" and interval.number == 4
 
     def _generate_interval_construction(self) -> Problem:
         """Generate a task constructing a note above or below another by interval name."""
@@ -829,6 +845,10 @@ class PitchIntervalReasoning(Task):
             answer_notation,
             with_octave=answer_has_octave,
             explicit_accidentals=force_answer_natural,
+        )
+        prompt_answer_format += (
+            ", preserving the theoretical spelling implied by the requested interval; "
+            "enharmonic substitutes are distinct"
         )
         followup = "Then reduce the result to a note name without octave. " if reduce_to_note_name else ""
         construction_tails = tuple(f"{followup}{tail}" for tail in NOTE_ANSWER_TAILS)
@@ -922,6 +942,10 @@ class PitchIntervalReasoning(Task):
             answer_notation,
             with_octave=False,
             explicit_accidentals=force_answer_natural,
+        )
+        answer_format += (
+            ", preserving the theoretical spelling produced by the written interval sequence; "
+            "enharmonic substitutes are distinct"
         )
         resolution_cot = []
         if style == FULL_ABC_SCORE_STYLE:

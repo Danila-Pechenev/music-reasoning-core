@@ -5,6 +5,7 @@ import re
 from typing import Any
 
 from music21 import chord as m21_chord
+from music21 import key as m21_key
 
 LETTERS = "CDEFGAB"
 STEP = {letter: i for i, letter in enumerate(LETTERS)}
@@ -712,6 +713,7 @@ class AnswerNormalizer:
             "closed position": "close voicing",
             "close position": "close voicing",
             "open position": "open voicing",
+            "first inversion 6/3": "first inversion 6",
             "third inversion 2": "third inversion 4/2",
         }
         return aliases.get(text, text)
@@ -780,16 +782,31 @@ class ABCContext:
         """Render the ABC header text for this context."""
         return f"L:{self.default_length}\nM:{self.meter}\nK:{self.key}"
 
+    @staticmethod
+    def analytical_key(tonic: str, mode: str) -> str:
+        """Convert an analytical major/minor key label to an ABC K: value."""
+        return f"{tonic}m" if "minor" in mode else tonic
+
     @classmethod
-    def random(cls) -> "ABCContext":
-        """Sample a common ABC header context and its key signature."""
-        key = random.choice(ABC_KEYS)
+    def random(cls, key: str | None = None) -> "ABCContext":
+        """Sample an ABC header, optionally using a specified analytical key."""
+        key = random.choice(ABC_KEYS) if key is None else key
         return cls(
             default_length=random.choice(ABC_DEFAULT_LENGTHS),
             meter=random.choice(ABC_METERS),
             key=key,
-            key_signature=ABC_KEY_SIGNATURES[key],
+            key_signature=cls.key_signature_for(key),
         )
+
+    @staticmethod
+    def key_signature_for(key: str) -> dict[str, int]:
+        """Return the letter accidentals implied by a conventional ABC key."""
+        mode = "minor" if key.endswith("m") else "major"
+        tonic = key[:-1] if mode == "minor" else key
+        sharps = m21_key.Key(tonic, mode).sharps
+        accidental_order = "FCGDAEB" if sharps >= 0 else "BEADGCF"
+        accidental = 1 if sharps >= 0 else -1
+        return {letter: accidental for letter in accidental_order[: abs(sharps)]}
 
     @staticmethod
     def pitch_body(note: Note) -> str:
@@ -1102,11 +1119,12 @@ class ChordRenderer:
         with_octave: bool = False,
         shuffle: bool = True,
         sep: str = "-",
+        abc_key: str | None = None,
     ) -> ChordRendering:
-        """Render chord tones in SPN, compact ABC, or one full ABC chord score."""
+        """Render chord tones, optionally fixing the key of a full ABC score."""
         ordered_notes = random.sample(list(notes), len(notes)) if shuffle else list(notes)
         if style == FULL_ABC_SCORE_STYLE:
-            context = ABCContext.random()
+            context = ABCContext.random() if abc_key is None else ABCContext.random(abc_key)
             rendered = [context.render_event(note, with_octave=with_octave) for note in ordered_notes]
             chord_event = f"[{''.join(note.token for note in rendered)}]{ABCContext.duration_suffix()}"
             resolved_notes = [

@@ -242,6 +242,28 @@ def test_abc_context_resolves_implicit_and_explicit_accidentals():
     assert "explicitly marks B sharp, overriding K:Bb" in context.resolution_sentence(explicit_sharp)
 
 
+@pytest.mark.parametrize(
+    ("abc_key", "expected_signature"),
+    [
+        ("C#", {letter: 1 for letter in "FCGDAEB"}),
+        ("Cb", {letter: -1 for letter in "BEADGCF"}),
+        ("A#m", {letter: 1 for letter in "FCGDAEB"}),
+        ("Abm", {letter: -1 for letter in "BEADGCF"}),
+    ],
+)
+def test_abc_context_supports_all_conventional_analytical_keys(abc_key, expected_signature):
+    context = ABCContext.random(abc_key)
+
+    assert context.key == abc_key
+    assert context.key_signature == expected_signature
+
+
+def test_abc_analytical_key_names_major_and_minor_modes():
+    assert ABCContext.analytical_key("Eb", "major") == "Eb"
+    assert ABCContext.analytical_key("F#", "minor") == "F#m"
+    assert ABCContext.analytical_key("D", "natural minor") == "Dm"
+
+
 def test_full_abc_sequence_is_parseable_and_resolves_key_signature(monkeypatch):
     context = ABCContext("1/4", "3/4", "Bb", ABC_KEY_SIGNATURES["Bb"])
     monkeypatch.setattr(ABCContext, "random", classmethod(lambda cls: context))
@@ -304,6 +326,9 @@ def test_answer_normalizer_accepts_music_answer_variants():
     assert AnswerNormalizer.note("B", "compact ABC notation") == "B"
     assert AnswerNormalizer.text("half diminished seventh") == AnswerNormalizer.text("half-diminished seventh")
     assert AnswerNormalizer.text("third inversion, 4/2") == AnswerNormalizer.text("third inversion 4/2")
+    assert AnswerNormalizer.text("first inversion 6/3") == AnswerNormalizer.text("first inversion 6")
+    assert AnswerNormalizer.text("firstinversion 6/3") != AnswerNormalizer.text("first inversion 6")
+    assert AnswerNormalizer.text("first inversion6/3") != AnswerNormalizer.text("first inversion 6")
     assert AnswerNormalizer.text("closed voicing") == AnswerNormalizer.text("close voicing")
     assert AnswerNormalizer.text("open position") == AnswerNormalizer.text("open voicing")
 

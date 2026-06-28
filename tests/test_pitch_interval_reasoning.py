@@ -15,6 +15,8 @@ from music_reasoning_tasks._music_theory import (
     Scale,
 )
 from music_reasoning_tasks.pitch_interval_reasoning import (
+    ENHARMONIC_INTERVAL_OPENERS,
+    ENHARMONIC_INTERVAL_SCORE_OPENERS,
     MODE_NAMES,
     PitchIntervalConfig,
     PitchIntervalReasoning,
@@ -147,8 +149,14 @@ def test_interval_classification_answer_matches_scale_relation():
             Note.parse(example.metadata.start_note),
             Note.parse(example.metadata.end_note),
         )
+        interval = Interval.between(
+            Note.parse(example.metadata.start_note),
+            Note.parse(example.metadata.end_note),
+            without_octaves=True,
+        )
 
         assert example.answer == expected
+        assert (interval.quality, interval.number) != ("perfect", 4)
 
 
 def test_interval_arithmetic_metadata_reconstructs_answer():
@@ -193,6 +201,8 @@ def test_instrument_transposition_metadata_reconstructs_answer():
             expected,
             example.metadata.answer_notation,
         )
+        assert "preserving the diatonic spelling implied by the instrument's transposition interval" in example.prompt
+        assert "enharmonic substitutes are distinct" in example.prompt
 
 
 def test_interval_construction_metadata_reconstructs_answer():
@@ -288,6 +298,24 @@ def test_interval_arithmetic_chain_length_tracks_chain_len():
     assert len(example.metadata.operations) == example.metadata._config["chain_len"]
     assert {step["operation"] for step in example.metadata.operations} <= {"add", "subtract", "reduce_then_invert"}
     assert task.score_answer(example.answer, example) == 1.0
+
+
+@pytest.mark.parametrize(
+    "mode",
+    ["interval_naming", "interval_arithmetic", "interval_construction", "transposition_chain"],
+)
+def test_spelling_sensitive_interval_prompts_distinguish_enharmonic_substitutes(mode):
+    random.seed(8800 + MODE_NAMES.index(mode))
+    example = PitchIntervalReasoning(PitchIntervalConfig(mode=mode)).generate_example(level=5)
+
+    assert "enharmonic" in example.prompt.lower()
+    assert "distinct" in example.prompt.lower()
+
+
+def test_enharmonic_interval_openers_do_not_restate_endpoint_comparison():
+    openers = ENHARMONIC_INTERVAL_OPENERS + ENHARMONIC_INTERVAL_SCORE_OPENERS
+
+    assert all("endpoint" not in opener.lower() for opener in openers)
 
 
 def test_interval_classification_key_complexity_limits_tonics():

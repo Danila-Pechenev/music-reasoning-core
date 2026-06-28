@@ -107,6 +107,9 @@ being selected, 70% of cases use compact ABC tokens and 30% use full ABC score
 fragments (`FULL_ABC_SCORE_SHARE = 0.3`). Random `L:` and `M:` values increase
 surface diversity but do not change the musical answer. The `K:` key signature
 can change interpreted pitches and therefore is musically meaningful.
+For full-ABC chord modes with an analytical key (`chord_membership`,
+`chromatic_chord_label`, and `roman_numeral_from_chord`), `K:` uses that
+analytical key. Other full-score modes sample a compatible score context.
 
 Full ABC score prompts are interpreted using their key signature. If a note is
 affected by an implicit key-signature accidental, the reasoning trace resolves
@@ -165,13 +168,13 @@ These families are ordered for implementation: start with compact, strongly veri
 | Mode | Prompt example | Answer |
 |---|---|---|
 | `interval_naming` | `Name the interval from F#3 to A4. Notes are written in scientific pitch notation. The answer is one interval name, including compound/simple size as written.` | `minor tenth` |
-| `interval_arithmetic` | `Start with a major tenth, then reduce to a simple interval and invert it, then add a minor third. The answer is one interval name for the final result.` | `major seventh` |
+| `interval_arithmetic` | `Start with a major tenth, then reduce to a simple interval and invert it, then add a minor third. Answer with one interval name for the final result. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.` | `major seventh` |
 | `pitch_count` | `Under pitch-class equivalence, how many distinct pitch classes are in C4, C5, B#3, Db4, C#5, Ebb4? Notes are written in scientific pitch notation. The answer is one integer.` | `3` |
 | `interval_classification` | `In C harmonic minor, classify the ascending note-to-note relation Eb-B using one of these labels: diatonic consonance, diatonic dissonance, chromatic alteration. The answer is one label from that list.` | `diatonic dissonance` |
 | `enharmonic_interval_comparison` | `Are C#4-E4 and Db4-Fb4 enharmonically equivalent intervals? Notes are written in scientific pitch notation. The answer is exactly 'yes' or 'no'.` | `yes` |
-| `instrument_transposition` | `A B-flat clarinet part writes D5. What sounding pitch is produced? Notes are written in scientific pitch notation. The answer is one note name in scientific pitch notation.` | `C5` |
-| `interval_construction` | `Build a minor third below E. Notes are written in scientific pitch notation. The answer is one note name without octave in scientific pitch notation.` | `C#` |
-| `transposition_chain` | `Transpose F# up a minor third, down a perfect fifth, then up a major second. Notes are written in scientific pitch notation. The answer is one note name without octave in scientific pitch notation.` | `E` |
+| `instrument_transposition` | `A B-flat clarinet part writes D5. What sounding pitch is produced? Notes are written in scientific pitch notation. Answer with one note name with octave in scientific pitch notation, preserving the diatonic spelling implied by the instrument's transposition interval; enharmonic substitutes are distinct.` | `C5` |
+| `interval_construction` | `Build a minor third below E. Notes are written in scientific pitch notation. Answer with one note name without octave in scientific pitch notation, preserving the theoretical spelling implied by the requested interval; enharmonic substitutes are distinct.` | `C#` |
+| `transposition_chain` | `Transpose F# up a minor third, down a perfect fifth, then up a major second. Notes are written in scientific pitch notation. Answer with one note name without octave in scientific pitch notation, preserving the theoretical spelling produced by the written interval sequence; enharmonic substitutes are distinct.` | `E` |
 
 **Difficulty knobs**
 
@@ -217,11 +220,14 @@ class PitchIntervalConfig(Config):
   without octave and answer without octave.
 - `interval_classification` samples major, natural minor, harmonic minor, and
   melodic minor contexts, then classifies note-to-note relations as diatonic
-  consonance, diatonic dissonance, or chromatic alteration.
+  consonance, diatonic dissonance, or chromatic alteration. Perfect fourths are
+  excluded because their consonance treatment depends on musical context that
+  an isolated note pair does not provide.
 - `instrument_transposition` uses a fixed table of common written-to-sounding
   transposing instruments, including clarinets, saxophones, horn, trumpet,
   guitar, and double bass. In this generator, each listed instrument sounds the
-  stated interval lower than written.
+  stated interval lower than written, and the answer must preserve the
+  theoretically transposed diatonic spelling.
 - Full ABC score prompts resolve key-signature accidentals in the COT before
   applying interval or pitch-class logic.
 
@@ -244,9 +250,9 @@ tests for independent cross-checks of pitch and interval behavior.
 | `open_close_voicing` | `Classify the voicing "C"-"G"-"e". Notes are written in compact ABC notation. Choose from: close voicing, open voicing. The answer is one label from that list.` | `open voicing` |
 | `enharmonic_chord_equivalence` | `Compare "C"-"^E"-"G"-"B" and "^B"-"F"-"__A"-"_C": are they enharmonically equivalent pitch-class chords? Notes are written in compact ABC notation. Answer exactly 'yes' or 'no'.` | `yes` |
 | `chromatic_chord_label` | `In C major, what chromatic label fits C-Ab-F# over Ab? Select exactly one label from this list: French augmented sixth, Italian augmented sixth, German augmented sixth, Swiss augmented sixth, Neapolitan sixth.` | `Italian augmented sixth` |
-| `chord_membership` | `Do all tones of Cb-F-Ab belong to Eb natural minor? Give one answer, either 'yes' or 'no'.` | `yes` |
-| `roman_numeral_from_chord` | `In D minor, analyze the chord in this ABC score fragment:\nL:1/8\nM:6/8\nK:Fm\n  [=A=D=B^F] |] %1 with "^F" in the bass. Interpret the ABC score using its key signature. Answer with one compact Roman numeral and closed-up figured bass.` | `vi43` |
-| `chord_from_roman_numeral` | `Which chord tones does vi43 produce in D minor? The expected answer is a hyphen-separated bass-upward note sequence in compact ABC notation, with any accidental made explicit, for example, ^C-=E-G.` | `^F-=A-=B-=D` |
+| `chord_membership` | `Do all tones of Cb-F-Ab belong to Eb natural minor? Judge membership by written note spelling; enharmonic substitutes are distinct. Give one answer, either 'yes' or 'no'.` | `yes` |
+| `roman_numeral_from_chord` | `In E minor, analyze the source chord E-G-A-C# over bass E; it resolves to D-F#-A. Answer with one compact Roman numeral and closed-up figured bass.` | `V43/VII` |
+| `chord_from_roman_numeral` | `Which chord tones does vi43 produce in D minor? The expected answer is a hyphen-separated bass-upward sequence of note names without octave numbers or markers in compact ABC notation, with any accidental made explicit, for example, ^C-=E-G. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.` | `^F-=A-=B-=D` |
 
 **Implemented behavior notes**
 
@@ -266,6 +272,10 @@ tests for independent cross-checks of pitch and interval behavior.
 - Roman-numeral modes include diatonic triads and seventh chords plus secondary
   dominant and secondary leading-tone functions to common non-tonic
   scale-degree targets.
+- `roman_numeral_from_chord` retains the full supported secondary-chord
+  vocabulary. Every secondary-analysis prompt includes its resolution chord so
+  the applied function is determined by harmonic context rather than by the
+  isolated source sonority alone.
 - Where answer-choice order is not musically significant, choices are sampled
   in random order to increase surface diversity without changing the canonical
   answer.
@@ -278,7 +288,7 @@ tests for independent cross-checks of pitch and interval behavior.
 | `max_accidental` | Accidental complexity in generated chord tones, roots, chromatic labels, membership distractors, enharmonic respellings, and Roman-derived spellings. | all modes | simple spelling | chromatic and enharmonic spellings |
 | `key_complexity` | Maximum number of sharps/flats in analytical key signatures. | `chord_membership`, `chromatic_chord_label`, `roman_numeral_from_chord`, `chord_from_roman_numeral` | common keys up to two sharps/flats | expands to all conventional major/minor keys |
 | `p_secondary` | Probability of sampling secondary-dominant or secondary-leading-tone Roman material where the mode allows it. | `roman_numeral_from_chord`, `chord_from_roman_numeral` | mostly diatonic Roman numerals | more secondary/applied Roman numerals |
-| `p_abc` | Probability of rendering chord-tone prompts in ABC notation where a mode has input chord tones, or note-sequence answers in compact ABC notation for `chord_from_roman_numeral`. ABC prompt cases split into 70% compact ABC note tokens and 30% full ABC score fragments with sampled common `L:`, `M:`, and `K:` headers. | all modes | mostly scientific pitch notation | more compact ABC and full ABC score prompts or compact ABC answer sequences |
+| `p_abc` | Probability of rendering chord-tone prompts in ABC notation where a mode has input chord tones, or note-sequence answers in compact ABC notation for `chord_from_roman_numeral`. ABC prompt cases split into 70% compact ABC note tokens and 30% full ABC score fragments. Full-score analytical modes sample `L:` and `M:` while using the analytical key as `K:`. | all modes | mostly scientific pitch notation | more compact ABC and full ABC score prompts or compact ABC answer sequences |
 
 **Config sketch**
 

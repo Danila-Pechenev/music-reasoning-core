@@ -8,6 +8,7 @@ from music21 import roman as m21_roman
 
 from reasoning_core.template import Config, Problem, Task, edict
 from music_reasoning_tasks._music_theory import (
+    ABCContext,
     AnswerNormalizer,
     CHOICE_TAILS,
     COMPACT_ABC_STYLE,
@@ -147,6 +148,10 @@ MEMBERSHIP_OPENERS = (
     "Determine whether {chord} is diatonic to {key}.",
     "For the key context {key}, test {chord}.",
 )
+MEMBERSHIP_TAILS = tuple(
+    "Judge membership by written note spelling; enharmonic substitutes are distinct. " + tail
+    for tail in YES_NO_TAILS
+)
 ROMAN_FROM_COLLECTION_OPENERS = (
     "In {key}, treat {chord} as a chord-tone collection with {bass} in the bass.",
     "Give the Roman numeral for {chord} as a chord-tone collection with {bass} in the bass in {key}.",
@@ -167,6 +172,18 @@ ROMAN_FROM_ORDERED_OPENERS = (
     "In the key of {key}, Roman-numeral analyze {chord}.",
     "Find the compact Roman numeral for {chord} in {key}.",
 )
+SECONDARY_ROMAN_FROM_COLLECTION_OPENERS = (
+    "In {key}, analyze the source chord-tone collection {chord}, with {bass} in the bass; it resolves to {resolution}.",
+    "Give the Roman numeral for the first chord-tone collection in {key}: {chord}, over bass {bass}, resolving to {resolution}.",
+    "In {key}, identify the Roman numeral of the source chord tones {chord} over bass {bass}; the resolution chord is {resolution}.",
+    "Analyze {chord} as source chord tones over bass {bass} in {key}, using {resolution} as the resolution chord.",
+)
+SECONDARY_ROMAN_FROM_ORDERED_OPENERS = (
+    "In {key}, analyze the source chord {chord}; it resolves to {resolution}.",
+    "Give the Roman numeral for the first chord in {key}: {chord}, resolving to {resolution}.",
+    "In {key}, identify the Roman numeral of the source chord {chord}; the resolution chord is {resolution}.",
+    "Analyze the source chord {chord} in {key}, using {resolution} as its resolution chord.",
+)
 ROMAN_TAILS = (
     "Answer format: one compact Roman numeral with figured-bass digits closed up, for example, V65/V.",
     "Give one compact Roman numeral with any figured-bass digits closed up, for example, viio42 or IV64.",
@@ -184,10 +201,10 @@ CHORD_FROM_ROMAN_OPENERS = (
     "Write the notes produced by {figure} in {key}.",
 )
 NOTE_SEQUENCE_TAILS = (
-    "Answer format: hyphen-separated note names from bass upward in {answer_notation}{explicit_accidental_clause}, for example, {answer_example}.",
-    "Give one bass-upward note sequence in {answer_notation}{explicit_accidental_clause}; use hyphens between note names, for example, {answer_example}.",
-    "The expected answer is a hyphen-separated bass-upward note sequence in {answer_notation}{explicit_accidental_clause}, for example, {answer_example}.",
-    "Answer with note names from bass upward in {answer_notation}{explicit_accidental_clause}; use hyphens between note names, for example, {answer_example}.",
+    "Answer format: hyphen-separated note names without octave numbers or markers, from bass upward in {answer_notation}{explicit_accidental_clause}, for example, {answer_example}. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.",
+    "Give one bass-upward sequence of note names without octave numbers or markers in {answer_notation}{explicit_accidental_clause}; use hyphens between note names, for example, {answer_example}. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.",
+    "The expected answer is a hyphen-separated bass-upward sequence of note names without octave numbers or markers in {answer_notation}{explicit_accidental_clause}, for example, {answer_example}. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.",
+    "Answer with note names without octave numbers or markers, from bass upward in {answer_notation}{explicit_accidental_clause}; use hyphens between note names, for example, {answer_example}. Preserve the theoretical chord spelling; enharmonic substitutes are distinct.",
 )
 ENHARMONIC_OPENERS = (
     "Are {first} and {second} enharmonically equivalent as pitch-class chords?",
@@ -294,7 +311,8 @@ class ChordRomanConfig(Config):
 
     # Probability of writing prompt/answer notes in ABC notation instead of
     # scientific pitch notation. ABC examples are split into 70% compact note
-    # tokens and 30% full score fragments with sampled common L/M/K headers.
+    # tokens and 30% full score fragments. Analytical modes use their key for
+    # K:, while other score modes sample a common key context.
     p_abc: float = 0.20
 
     # Maximum attempts to generate a valid instance before failing.
@@ -597,12 +615,14 @@ class ChordRomanReasoning(Task):
         style = self.config.random_style()
         with_octave = random.choice([False, True])
         label, figure, tonic, mode, rn, notes = self._sample_chromatic_chord(with_octave)
+        abc_key = ABCContext.analytical_key(tonic, mode)
         bass = Music21Adapter.note_from_pitch(rn.bass(), with_octave=with_octave)
         rendered = ChordRenderer.render(
             notes,
             style,
             with_octave=with_octave,
             shuffle=not with_octave,
+            abc_key=abc_key,
         )
         rendered_bass = NoteRenderer.note(
             bass,
@@ -652,6 +672,8 @@ class ChordRomanReasoning(Task):
         with_octave = random.choice([False, True])
         max_accidental = self.config.max_accidental
         scale, key_label = self._sample_scale()
+        analytical_key = f"{scale.tonic.name(False)} {key_label}"
+        abc_key = ABCContext.analytical_key(scale.tonic.name(False), key_label)
         yes = random.choice([True, False])
         notes = self._sample_diatonic_chord(scale, self._sample_chord_size())
         if not yes:
@@ -665,13 +687,14 @@ class ChordRomanReasoning(Task):
             with_octave=with_octave,
             shuffle=not with_octave,
             sep=", ",
+            abc_key=abc_key,
         )
         prompt = PromptFormatter.choice_prompt(
             MEMBERSHIP_OPENERS,
-            YES_NO_TAILS,
+            MEMBERSHIP_TAILS,
             style=style,
             chord=ChordRenderer.prompt_value(rendered, style),
-            key=f"{scale.tonic.name(False)} {key_label}",
+            key=analytical_key,
         )
         scale_note_style = COMPACT_ABC_STYLE if style == FULL_ABC_SCORE_STYLE else style
         scale_notes = ", ".join(
@@ -698,7 +721,7 @@ class ChordRomanReasoning(Task):
             answer,
             "yes_no",
             cot,
-            key=f"{scale.tonic.name(False)} {key_label}",
+            key=analytical_key,
             chord_notes=[note.name(with_octave) for note in rendered_notes],
             style=style,
             with_octave=with_octave,
@@ -709,6 +732,8 @@ class ChordRomanReasoning(Task):
         style = self.config.random_style()
         with_octave = random.choice([False, True])
         tonic, mode, rn, notes = self._sample_roman_context(with_octave)
+        analytical_key = f"{tonic} {mode}"
+        abc_key = ABCContext.analytical_key(tonic, mode)
         bass = Music21Adapter.note_from_pitch(rn.bass(), with_octave=with_octave)
         answer = AnswerNormalizer.roman(rn.figure)
         rendered = ChordRenderer.render(
@@ -716,6 +741,7 @@ class ChordRomanReasoning(Task):
             style,
             with_octave=with_octave,
             shuffle=not with_octave,
+            abc_key=abc_key,
         )
         rendered_bass = NoteRenderer.note(
             bass,
@@ -723,15 +749,45 @@ class ChordRomanReasoning(Task):
             with_octave=with_octave,
             force_natural=style == FULL_ABC_SCORE_STYLE,
         )
+        secondary_rn = rn.secondaryRomanNumeral if self._secondary_target(answer) else None
+        resolution_notes = None
+        rendered_resolution = None
+        if secondary_rn is not None:
+            resolution_notes = [
+                Music21Adapter.note_from_pitch(pitch, with_octave=with_octave)
+                for pitch in secondary_rn.pitches
+            ]
+            rendered_resolution = ChordRenderer.render(
+                resolution_notes,
+                style,
+                with_octave=with_octave,
+                shuffle=False,
+                abc_key=abc_key,
+            )
+
+        if rendered_resolution is None:
+            opener_templates = ROMAN_FROM_ORDERED_OPENERS if with_octave else ROMAN_FROM_COLLECTION_OPENERS
+            prompt_values = {}
+        else:
+            opener_templates = (
+                SECONDARY_ROMAN_FROM_ORDERED_OPENERS
+                if with_octave
+                else SECONDARY_ROMAN_FROM_COLLECTION_OPENERS
+            )
+            prompt_values = {
+                "resolution": ChordRenderer.prompt_value(rendered_resolution, style),
+            }
         prompt = PromptFormatter.choice_prompt(
-            ROMAN_FROM_ORDERED_OPENERS if with_octave else ROMAN_FROM_COLLECTION_OPENERS,
+            opener_templates,
             ROMAN_TAILS,
             style=style,
-            key=f"{tonic} {mode}",
+            key=analytical_key,
             chord=ChordRenderer.prompt_value(rendered, style),
             bass=rendered_bass,
+            **prompt_values,
         )
-        cot = rendered.resolution_cot + self._roman_analysis_cot(
+        resolution_cot = [] if rendered_resolution is None else rendered_resolution.resolution_cot
+        cot = rendered.resolution_cot + resolution_cot + self._roman_analysis_cot(
             notes,
             bass,
             rn,
@@ -740,19 +796,27 @@ class ChordRomanReasoning(Task):
             mode,
             style,
             rendered_bass,
+            secondary_rn,
         )
+        resolution_metadata = {}
+        if secondary_rn is not None and resolution_notes is not None:
+            resolution_metadata = {
+                "resolution_roman_figure": AnswerNormalizer.roman(secondary_rn.figure),
+                "resolution_chord_notes": [note.name(with_octave) for note in resolution_notes],
+            }
         return self._problem(
             "roman_numeral_from_chord",
             prompt,
             answer,
             "roman",
             cot,
-            key=f"{tonic} {mode}",
+            key=analytical_key,
             chord_notes=[note.name(with_octave) for note in notes],
             bass_note=bass.name(with_octave),
             roman_figure=answer,
             style=style,
             with_octave=with_octave,
+            **resolution_metadata,
         )
 
     def _roman_analysis_cot(
@@ -765,6 +829,7 @@ class ChordRomanReasoning(Task):
         mode: str,
         style: str,
         rendered_bass: str,
+        secondary_rn: m21_roman.RomanNumeral | None,
     ) -> list[str]:
         """Explain how a chord and bass imply a Roman numeral in the key."""
         root = Music21Adapter.note_from_pitch(rn.root()).without_octave()
@@ -783,7 +848,7 @@ class ChordRomanReasoning(Task):
         cot = [
             f"Arrange the chord tones by stacking thirds: {root_position_text}. The root is {root_text}.",
             f"The intervals above the root are: {interval_phrases}. Therefore, the chord is {TextFormatter.article(quality)}.",
-            self._roman_function_sentence(base, root, quality, tonic, mode, style),
+            self._roman_function_sentence(base, root, quality, tonic, mode, style, secondary_rn),
             (
                 f"The bass {rendered_bass} is the chordal {member_name}, so the chord is in "
                 f"{inversion_label} and {self._roman_suffix_phrase(suffix, size)}."
@@ -797,6 +862,11 @@ class ChordRomanReasoning(Task):
         style = self.config.random_style()
         tonic, mode, rn, notes = self._sample_roman_context()
         answer_style, answer_notation, force_answer_natural = NoteRenderer.answer_rendering(style)
+        prompt_answer_notation = (
+            "standard note-name notation"
+            if answer_notation == "scientific pitch notation"
+            else answer_notation
+        )
         explicit_accidental_clause = ", with any accidental made explicit" if force_answer_natural else ""
         answer_example = "C#-E-G" if answer_style == SPN_STYLE else "^C-=E-G"
         answer = ChordRenderer.join(
@@ -821,7 +891,7 @@ class ChordRomanReasoning(Task):
             NOTE_SEQUENCE_TAILS,
             key=f"{tonic} {mode}",
             figure=AnswerNormalizer.roman(rn.figure),
-            answer_notation=answer_notation,
+            answer_notation=prompt_answer_notation,
             explicit_accidental_clause=explicit_accidental_clause,
             answer_example=answer_example,
         )
@@ -1133,16 +1203,33 @@ class ChordRomanReasoning(Task):
         tonic: str,
         mode: str,
         style: str,
+        secondary_rn: m21_roman.RomanNumeral | None = None,
     ) -> str:
         """Explain why the root and quality imply the Roman base."""
         target = self._secondary_target(base)
         if target is not None:
+            if secondary_rn is None:
+                raise ValueError("Secondary Roman analysis requires its resolution chord.")
             local_base = base.partition("/")[0]
+            resolution_root = Music21Adapter.note_from_pitch(secondary_rn.root()).without_octave()
+            resolution_notes = [
+                Music21Adapter.note_from_pitch(pitch).without_octave()
+                for pitch in secondary_rn.pitches
+            ]
+            resolution_text = ChordRenderer.for_cot(
+                resolution_notes,
+                style,
+                with_octave=False,
+            )
+            resolution_figure = AnswerNormalizer.roman(secondary_rn.figure)
+            resolution_quality = secondary_rn.commonName
             return (
-                f"In {tonic} {mode}, {TextFormatter.article(quality)} on "
-                f"{self._render_cot_note(root, style)} functions as local {local_base} "
-                f"that resolves to {target}. Applied function is written with a slash, "
-                f"so the Roman base is {base}."
+                f"The resolution chord stacks as {resolution_text}. Its root is "
+                f"{self._render_cot_note(resolution_root, style)}, and it is "
+                f"{TextFormatter.article(resolution_quality)}, identifying it as {resolution_figure} "
+                f"in {tonic} {mode}. The source chord is {TextFormatter.article(quality)} "
+                f"on {self._render_cot_note(root, style)}; it therefore functions as local {local_base} "
+                f"of {target}, so the Roman base is {base}."
             )
 
         degree = ((root.step - Note.parse(tonic).step) % 7) + 1
