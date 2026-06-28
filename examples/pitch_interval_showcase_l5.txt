@@ -221,56 +221,59 @@ A# is in the collection, and E# is in the collection.
 The written interval from A# to E# is a perfect fifth.
 Since both notes are diatonic and the interval is a consonance, the label is diatonic consonance.
 
-TASK 13 | mode=enharmonic_interval_comparison | style=full_abc_score
+TASK 13 | mode=interval_size_comparison | style=full_abc_score
 --------------------------------------------------------------------------------
 PROMPT:
-Compare the two notated intervals below for enharmonic equivalence.
+Are the written intervals in these two ABC fragments interval-size equivalent by exact semitone span?
 First fragment:
-L:1/16
-M:none
-K:Bm
-  [__F,__c]4 |] %1
-Second fragment:
-L:1/4
+L:1/8
 M:4/4
-K:E
-  [__G__f]1 |] %1
-Resolve both ABC scores using their key signatures, then respond with exactly 'yes' or 'no'.
+K:F
+  [_F__e']4 |] %1
+Second fragment:
+L:1/16
+M:4/4
+K:Eb
+  [Gg']1 |] %1
+Resolve both ABC scores using their key signatures, then respond with one lowercase word: 'yes' or 'no'.
 
 ANSWER:
 no
 
 COT:
-The score note "__F," explicitly marks F double flat, overriding K:Bm, so it represents "__F,".
-The score note "__c" explicitly marks C double flat, overriding K:Bm, so it represents "__c".
-The score note "__G" explicitly marks G double flat, overriding K:E, so it represents "__G".
-The score note "__f" explicitly marks F double flat, overriding K:E, so it represents "__f".
-Compare endpoint pitches: "__F," and "__G" do not represent the same pitch; "__c" and "__f" do not represent the same pitch.
-At least one corresponding endpoint pitch differs, so the written intervals are not enharmonically equivalent and the answer is no.
+The score note "_F" explicitly marks F flat, so it represents "_F".
+The score note "__e'" explicitly marks E double flat, so it represents "__e'".
+In K:Eb, G has no key-signature accidental, so the score note "G" represents "=G".
+In K:Eb, G has no key-signature accidental, so the score note "g'" represents "=g'".
+The interval from "_F" to "__e'" is a minor fourteenth, which spans 22 semitones.
+The interval from "=G" to "=g'" is a perfect fifteenth, which spans 24 semitones.
+The semitone spans differ, so the intervals are not interval-size equivalent and the answer is no.
 
-TASK 14 | mode=enharmonic_interval_comparison | style=compact_abc
+TASK 14 | mode=interval_size_comparison | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Compare "_E,"-"^^c" and "__F,"-"__e": are the intervals enharmonically equivalent? Notes are written in compact ABC notation. Respond with exactly one word: 'yes' or 'no'.
+Check whether the written intervals "b"-"_g'" and "G"-"d" are interval-size equivalent by semitone count. Notes are written in compact ABC notation. Answer format: 'yes' or 'no'.
 
 ANSWER:
 yes
 
 COT:
-Compare endpoint pitches: "_E," and "__F," represent the same pitch; "^^c" and "__e" represent the same pitch.
-Both corresponding endpoint pitches match, so the written intervals are enharmonically equivalent and the answer is yes.
+The interval from "b" to "_g'" is a diminished sixth, which spans 7 semitones.
+The interval from "G" to "d" is a perfect fifth, which spans 7 semitones.
+The semitone spans are equal, so the intervals are interval-size equivalent and the answer is yes.
 
-TASK 15 | mode=enharmonic_interval_comparison | style=spn
+TASK 15 | mode=interval_size_comparison | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-Compare G4-Bbb5 and E##5-A##5: are the intervals enharmonically equivalent? Notes are written in scientific pitch notation. The expected answer is one word: 'yes' or 'no'.
+Determine whether the written intervals A5-A6 and D3-E3 are interval-size equivalent by exact semitone span. Notes are written in scientific pitch notation. Respond with one lowercase word: 'yes' or 'no'.
 
 ANSWER:
 no
 
 COT:
-Compare endpoint pitches: G4 and E##5 do not represent the same pitch; Bbb5 and A##5 do not represent the same pitch.
-At least one corresponding endpoint pitch differs, so the written intervals are not enharmonically equivalent and the answer is no.
+The interval from A5 to A6 is a perfect octave, which spans 12 semitones.
+The interval from D3 to E3 is a major second, which spans 2 semitones.
+The semitone spans differ, so the intervals are not interval-size equivalent and the answer is no.
 
 TASK 16 | mode=instrument_transposition | style=full_abc_score | answer_notation=compact ABC notation
 --------------------------------------------------------------------------------

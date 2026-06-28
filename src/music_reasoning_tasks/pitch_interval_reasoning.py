@@ -33,7 +33,7 @@ MODE_NAMES = (
     "interval_arithmetic",
     "pitch_count",
     "interval_classification",
-    "enharmonic_interval_comparison",
+    "interval_size_comparison",
     "instrument_transposition",
     "interval_construction",
     "transposition_chain",
@@ -154,23 +154,23 @@ INTERVAL_CLASSIFICATION_OPENERS = (
     "For the key context {key}, what label fits the relation {relation}?",
     "Determine whether the relation {relation} in {key} is diatonic consonance, diatonic dissonance, or chromatic alteration.",
 )
-ENHARMONIC_INTERVAL_OPENERS = (
-    "Are {first} and {second} enharmonically equivalent intervals?",
-    "Do {first} and {second} represent enharmonically equivalent intervals?",
-    "Compare {first} and {second}: are the intervals enharmonically equivalent?",
-    "Assess {first} and {second} for enharmonic interval equivalence.",
-    "Check whether {first} and {second} are enharmonically equivalent written intervals.",
-    "Is the written interval {first} enharmonically equivalent to {second}?",
-    "Are the two written intervals {first} and {second} enharmonically the same?",
-    "Determine whether the written intervals {first} and {second} are enharmonically equivalent.",
+INTERVAL_SIZE_COMPARISON_OPENERS = (
+    "Are {first} and {second} interval-size equivalent, meaning that they span the same number of semitones?",
+    "Do {first} and {second} span the same number of semitones and therefore count as interval-size equivalent?",
+    "Compare {first} and {second}: are they interval-size equivalent by exact semitone span?",
+    "Assess whether {first} and {second} are interval-size equivalent, using their exact semitone spans.",
+    "Check whether the written intervals {first} and {second} are interval-size equivalent by semitone count.",
+    "Is the written interval {first} interval-size equivalent to {second}, meaning equal in semitone span?",
+    "Are the two written intervals {first} and {second} interval-size equivalent by semitone count?",
+    "Determine whether the written intervals {first} and {second} are interval-size equivalent by exact semitone span.",
 )
-ENHARMONIC_INTERVAL_SCORE_OPENERS = (
-    "Is the interval in this ABC score fragment:\n{first}\nenharmonically equivalent to the interval in this ABC score fragment:\n{second}?",
-    "Compare the interval in this ABC score fragment:\n{first}\nwith the interval in this ABC score fragment:\n{second}\nAre they enharmonically equivalent?",
-    "Do these two ABC score fragments show enharmonically equivalent intervals?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
-    "After interpreting the key signatures, are the intervals in these ABC score fragments enharmonically equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
-    "Compare the two notated intervals below for enharmonic equivalence.\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
-    "Are the written intervals in these two ABC fragments enharmonically equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+INTERVAL_SIZE_COMPARISON_SCORE_OPENERS = (
+    "Do the intervals in these ABC score fragments span the same number of semitones and therefore count as interval-size equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "Compare the exact semitone spans of the intervals in these ABC score fragments. Are they interval-size equivalent?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "Are the intervals in these two ABC score fragments interval-size equivalent by exact semitone span?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "After interpreting the key signatures, are the intervals in these ABC score fragments interval-size equivalent by semitone count?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "Compare the two notated intervals below. Are they interval-size equivalent, meaning equal in semitone span?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
+    "Are the written intervals in these two ABC fragments interval-size equivalent by exact semitone span?\nFirst fragment:\n{first}\nSecond fragment:\n{second}",
 )
 ABC_PAIR_YES_NO_TAILS = (
     "Interpret each ABC score using its key signature. Answer format: 'yes' or 'no'.",
@@ -615,8 +615,8 @@ class PitchIntervalReasoning(Task):
             end_note=second.name(False),
         )
 
-    def _generate_enharmonic_interval_comparison(self) -> Problem:
-        """Generate a task comparing whether two written intervals are enharmonically equivalent."""
+    def _generate_interval_size_comparison(self) -> Problem:
+        """Generate a task comparing the exact semitone sizes of two intervals."""
         style = self.config.random_style()
         accidental_limit = self.config.max_accidental
         max_interval_number = self.config.max_interval_number
@@ -627,25 +627,28 @@ class PitchIntervalReasoning(Task):
         )
         first_interval = Interval(quality1, number1, start1, end1)
         if yes:
-            candidates = []
-            start_spellings = start1.exact_pitch_spellings(accidental_limit)
-            end_spellings = end1.exact_pitch_spellings(accidental_limit)
-            for start2 in start_spellings:
-                for end2 in end_spellings:
-                    if (
-                        start1.same_spelling(start2, include_octave=True)
-                        and end1.same_spelling(end2, include_octave=True)
-                    ):
-                        continue
-                    try:
-                        candidate_interval = Interval.between(start2, end2)
-                    except ValueError:
-                        continue
-                    if candidate_interval.number <= max_interval_number + 1:
-                        candidates.append(candidate_interval)
-            if not candidates:
-                raise ValueError("Could not construct an enharmonically equivalent interval pair.")
-            second_interval = random.choice(candidates)
+            matching_intervals = [
+                Interval(quality, number)
+                for number in range(1, max_interval_number + 1)
+                for quality in Interval.quality_options(number, accidental_limit)
+                if Interval.semitones_for(quality, number) == first_interval.semitones
+            ]
+            for _ in range(GENERATION_RETRY_LIMIT):
+                candidate = random.choice(matching_intervals)
+                start2, end2, quality2, number2 = self._sample_constructed_pair(
+                    max_number=max_interval_number,
+                    max_accidental=accidental_limit,
+                    quality=candidate.quality,
+                    number=candidate.number,
+                )
+                if not (
+                    start1.same_spelling(start2, include_octave=True)
+                    and end1.same_spelling(end2, include_octave=True)
+                ):
+                    second_interval = Interval(quality2, number2, start2, end2)
+                    break
+            else:
+                raise ValueError("Could not construct a distinct interval with the same size.")
         else:
             for _ in range(GENERATION_RETRY_LIMIT):
                 start2, end2, quality2, number2 = self._sample_constructed_pair(
@@ -653,22 +656,24 @@ class PitchIntervalReasoning(Task):
                     max_accidental=accidental_limit,
                 )
                 second_interval = Interval(quality2, number2, start2, end2)
-                if not first_interval.same_endpoint_pitches(second_interval):
+                if first_interval.semitones != second_interval.semitones:
                     break
             else:
-                raise ValueError("Could not construct a distinct interval pair.")
-        start2 = second_interval.start
-        end2 = second_interval.end
+                raise ValueError("Could not construct intervals with different sizes.")
         resolution_cot = []
         if style == FULL_ABC_SCORE_STYLE:
-            rendered_first, first_rendered_notes, first_context = ABCContext.interval_score_with_resolution(start1, end1)
-            rendered_second, second_rendered_notes, second_context = ABCContext.interval_score_with_resolution(start2, end2)
+            rendered_first, first_rendered_notes, first_context = (
+                ABCContext.interval_score_with_resolution(start1, end1)
+            )
+            rendered_second, second_rendered_notes, second_context = (
+                ABCContext.interval_score_with_resolution(start2, end2)
+            )
             resolution_cot = [
                 *[first_context.resolution_sentence(note) for note in first_rendered_notes],
                 *[second_context.resolution_sentence(note) for note in second_rendered_notes],
             ]
             prompt = PromptFormatter.choice_prompt(
-                ENHARMONIC_INTERVAL_SCORE_OPENERS,
+                INTERVAL_SIZE_COMPARISON_SCORE_OPENERS,
                 ABC_PAIR_YES_NO_TAILS,
                 tail_separator="\n",
                 first=rendered_first,
@@ -678,34 +683,46 @@ class PitchIntervalReasoning(Task):
             rendered_first = NoteRenderer.pair(start1, end1, style)
             rendered_second = NoteRenderer.pair(start2, end2, style)
             prompt = PromptFormatter.choice_prompt(
-                ENHARMONIC_INTERVAL_OPENERS,
+                INTERVAL_SIZE_COMPARISON_OPENERS,
                 YES_NO_TAILS,
                 style=style,
                 first=rendered_first,
                 second=rendered_second,
             )
-        start_pitches_match = start1.same_pitch(start2)
-        end_pitches_match = end1.same_pitch(end2)
         cot_note_style = COMPACT_ABC_STYLE if style == FULL_ABC_SCORE_STYLE else style
         force_natural_in_cot = style == FULL_ABC_SCORE_STYLE
-        rendered_start1 = NoteRenderer.note(start1, cot_note_style, force_natural=force_natural_in_cot)
-        rendered_start2 = NoteRenderer.note(start2, cot_note_style, force_natural=force_natural_in_cot)
-        rendered_end1 = NoteRenderer.note(end1, cot_note_style, force_natural=force_natural_in_cot)
-        rendered_end2 = NoteRenderer.note(end2, cot_note_style, force_natural=force_natural_in_cot)
+        rendered_start1 = NoteRenderer.note(
+            start1, cot_note_style, force_natural=force_natural_in_cot
+        )
+        rendered_end1 = NoteRenderer.note(
+            end1, cot_note_style, force_natural=force_natural_in_cot
+        )
+        rendered_start2 = NoteRenderer.note(
+            start2, cot_note_style, force_natural=force_natural_in_cot
+        )
+        rendered_end2 = NoteRenderer.note(
+            end2, cot_note_style, force_natural=force_natural_in_cot
+        )
         cot = resolution_cot + [
-            f"Compare endpoint pitches: {rendered_start1} and {rendered_start2} "
-            f"{'represent the same pitch' if start_pitches_match else 'do not represent the same pitch'}; "
-            f"{rendered_end1} and {rendered_end2} "
-            f"{'represent the same pitch' if end_pitches_match else 'do not represent the same pitch'}."
+            f"The interval from {rendered_start1} to {rendered_end1} is "
+            f"{TextFormatter.article(first_interval.name())}, which spans "
+            f"{TextFormatter.count_phrase(first_interval.semitones)}.",
+            f"The interval from {rendered_start2} to {rendered_end2} is "
+            f"{TextFormatter.article(second_interval.name())}, which spans "
+            f"{TextFormatter.count_phrase(second_interval.semitones)}.",
         ]
         if yes:
-            cot.append("Both corresponding endpoint pitches match, so the written intervals are enharmonically equivalent and the answer is yes.")
+            cot.append(
+                "The semitone spans are equal, so the intervals are "
+                "interval-size equivalent and the answer is yes."
+            )
         else:
             cot.append(
-                "At least one corresponding endpoint pitch differs, so the written intervals are not enharmonically equivalent and the answer is no."
+                "The semitone spans differ, so the intervals are not "
+                "interval-size equivalent and the answer is no."
             )
         return self._problem(
-            "enharmonic_interval_comparison",
+            "interval_size_comparison",
             prompt,
             "yes" if yes else "no",
             "yes_no",

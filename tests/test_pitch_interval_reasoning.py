@@ -15,8 +15,8 @@ from music_reasoning_tasks._music_theory import (
     Scale,
 )
 from music_reasoning_tasks.pitch_interval_reasoning import (
-    ENHARMONIC_INTERVAL_OPENERS,
-    ENHARMONIC_INTERVAL_SCORE_OPENERS,
+    INTERVAL_SIZE_COMPARISON_OPENERS,
+    INTERVAL_SIZE_COMPARISON_SCORE_OPENERS,
     MODE_NAMES,
     PitchIntervalConfig,
     PitchIntervalReasoning,
@@ -157,6 +157,35 @@ def test_interval_classification_answer_matches_scale_relation():
 
         assert example.answer == expected
         assert (interval.quality, interval.number) != ("perfect", 4)
+
+
+def test_interval_size_comparison_matches_exact_semitone_spans():
+    random.seed(7320)
+    task = PitchIntervalReasoning(PitchIntervalConfig(mode="interval_size_comparison"))
+    seen_answers = set()
+    seen_differently_named_equal_size_intervals = False
+
+    for _ in range(100):
+        example = task.generate_example(level=5)
+        first = Interval(
+            example.metadata.first_interval_quality,
+            example.metadata.first_interval_number,
+        )
+        second = Interval(
+            example.metadata.second_interval_quality,
+            example.metadata.second_interval_number,
+        )
+        expected = "yes" if first.semitones == second.semitones else "no"
+        seen_answers.add(example.answer)
+        if expected == "yes" and first != second:
+            seen_differently_named_equal_size_intervals = True
+
+        assert example.answer == expected
+        assert "interval-size equivalent" in example.prompt
+        assert "enharmonically equivalent" not in example.prompt
+
+    assert seen_answers == {"yes", "no"}
+    assert seen_differently_named_equal_size_intervals
 
 
 def test_interval_arithmetic_metadata_reconstructs_answer():
@@ -312,10 +341,11 @@ def test_spelling_sensitive_interval_prompts_distinguish_enharmonic_substitutes(
     assert "distinct" in example.prompt.lower()
 
 
-def test_enharmonic_interval_openers_do_not_restate_endpoint_comparison():
-    openers = ENHARMONIC_INTERVAL_OPENERS + ENHARMONIC_INTERVAL_SCORE_OPENERS
+def test_interval_size_comparison_openers_define_the_equivalence_rule():
+    openers = INTERVAL_SIZE_COMPARISON_OPENERS + INTERVAL_SIZE_COMPARISON_SCORE_OPENERS
 
-    assert all("endpoint" not in opener.lower() for opener in openers)
+    assert all("interval-size equivalent" in opener.lower() for opener in openers)
+    assert all("semitone" in opener.lower() for opener in openers)
 
 
 def test_interval_classification_key_complexity_limits_tonics():

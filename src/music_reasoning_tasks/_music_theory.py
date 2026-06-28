@@ -559,13 +559,6 @@ class Interval:
             and self.simple_number in CONSONANT_INTERVAL_SIMPLE_NUMBERS
         )
 
-    def same_endpoint_pitches(self, other: "Interval") -> bool:
-        """Return whether two concrete intervals have the same sounding endpoints."""
-        if self.start is None or self.end is None or other.start is None or other.end is None:
-            raise ValueError("Endpoint-pitch comparison requires concrete intervals.")
-        return self.start.same_pitch(other.start) and self.end.same_pitch(other.end)
-
-
 @dataclass(frozen=True)
 class Scale:
     """A diatonic collection used for key-context classification tasks."""
