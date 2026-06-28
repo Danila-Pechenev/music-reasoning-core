@@ -56,6 +56,30 @@ def test_parse_args_accepts_openrouter_provider_slug(monkeypatch):
     assert args.provider == "baidu"
 
 
+def test_result_directory_separates_max_token_budgets(tmp_path):
+    result_dir = evaluate_openrouter._result_directory(
+        tmp_path,
+        "openrouter/deepseek/deepseek-v4-flash",
+        "v0.4.2",
+        "n16",
+        "baidu",
+        "high",
+        8192,
+        0,
+    )
+
+    assert result_dir == (
+        tmp_path
+        / "deepseek-deepseek-v4-flash"
+        / "v0.4.2"
+        / "n16"
+        / "provider-baidu"
+        / "reasoning-high"
+        / "max-tokens-8192"
+        / "seed-0"
+    )
+
+
 def test_cli_help_describes_every_optional_argument_default(monkeypatch, capsys):
     monkeypatch.setattr("sys.argv", ["evaluate_openrouter.py", "--help"])
 

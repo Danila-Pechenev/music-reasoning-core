@@ -101,6 +101,30 @@ def _model_slug(model: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "-", model).strip("-_") or "model"
 
 
+def _result_directory(
+    output_root: Path,
+    model: str,
+    dataset_revision: str,
+    dataset_config: str,
+    provider: str | None,
+    reasoning_effort: str | None,
+    max_tokens: int,
+    seed: int,
+) -> Path:
+    """Build a result path that isolates every inference configuration."""
+    output_dir = (
+        output_root
+        / _model_slug(model.removeprefix("openrouter/"))
+        / _model_slug(dataset_revision)
+        / _model_slug(dataset_config)
+    )
+    if provider is not None:
+        output_dir /= f"provider-{_model_slug(provider)}"
+    if reasoning_effort is not None:
+        output_dir /= f"reasoning-{_model_slug(reasoning_effort)}"
+    return output_dir / f"max-tokens-{max_tokens}" / f"seed-{seed}"
+
+
 def _openrouter_model(model: str) -> str:
     """Return the exact LiteLLM OpenRouter model route."""
     model = model.strip()
@@ -973,17 +997,16 @@ def main() -> None:
     print(f"Batch execution: sequential batches of up to {args.batch_size} prompts")
     print(f"API seed: {args.seed}")
     print(f"Provider routing: {args.provider or 'OpenRouter automatic routing'}")
-    output_dir = (
-        args.output_root
-        / _model_slug(model.removeprefix("openrouter/"))
-        / _model_slug(dataset_revision)
-        / _model_slug(args.dataset_config)
+    output_dir = _result_directory(
+        args.output_root,
+        model,
+        dataset_revision,
+        args.dataset_config,
+        args.provider,
+        args.reasoning_effort,
+        args.max_tokens,
+        args.seed,
     )
-    if args.provider is not None:
-        output_dir /= f"provider-{_model_slug(args.provider)}"
-    if args.reasoning_effort is not None:
-        output_dir /= f"reasoning-{_model_slug(args.reasoning_effort)}"
-    output_dir /= f"seed-{args.seed}"
     results_path = output_dir / "results.jsonl"
     report_path = output_dir / "report.md"
     incorrect_responses_path = output_dir / "incorrect_responses.md"
