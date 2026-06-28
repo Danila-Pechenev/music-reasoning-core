@@ -196,21 +196,27 @@ By default, the script evaluates every row in the `easy`, `moderate`, and
 [`dpechenev/music-reasoning-benchmark`](https://huggingface.co/datasets/dpechenev/music-reasoning-benchmark),
 using the `n64` configuration and its latest stable semantic-version tag. The
 selected configuration, tag, and exact commit are recorded in every result and
-report. Calls are made in bounded batches through
-[`litlm`](https://github.com/sileod/litlm), and each response is evaluated with
-the corresponding task family's `score_answer` method. All predictions are
-stored in one resumable JSONL file and one detailed Markdown report for
-convenience, while every metric remains separated by difficulty split. Outputs
-are organized as:
+report. Batches of 32 prompts are executed sequentially through
+[`litlm`](https://github.com/sileod/litlm), with API seed `0` by default, and
+each response is evaluated with the corresponding task family's `score_answer`
+method. All predictions are stored in one resumable JSONL file and one detailed
+Markdown report for convenience, while every metric remains separated by
+difficulty split. Outputs are organized as:
 
 ```text
 benchmark_results/<model>/<version>/
   <dataset-config>/
-    results.jsonl
-    report.md
+    [provider-<provider>/]
+      [reasoning-<effort>/]
+        seed-<seed>/
+          results.jsonl
+          report.md
+          incorrect_responses.md
 ```
 
-The report includes recorded API benchmark time separately for each split.
+The report contains aggregate metrics and recorded API benchmark time for each
+split. Every completed incorrect response is written separately to
+`incorrect_responses.md` for qualitative error analysis.
 
 Select another published benchmark release with `--revision`, for example:
 
@@ -237,6 +243,19 @@ python scripts/evaluate_openrouter.py deepseek/deepseek-v4-pro \
 
 Effort-specific evaluations are stored in a subdirectory such as
 `reasoning-high/` so they remain separate from default-effort runs.
+
+To restrict requests to one OpenRouter provider, pass its provider slug. For
+example, this routes DeepSeek V4 Flash only through Baidu Qianfan:
+
+```bash
+python scripts/evaluate_openrouter.py deepseek/deepseek-v4-flash \
+  --provider baidu \
+  --dataset-config n16
+```
+
+Provider-specific evaluations are stored in a subdirectory such as
+`provider-baidu/`, preventing them from being mixed with automatic-routing
+runs.
 
 Before launching a full run, an inexpensive smoke test is recommended:
 
