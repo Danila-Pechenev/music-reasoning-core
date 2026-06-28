@@ -50,6 +50,9 @@ The generators therefore emphasize:
 The current implementation includes two task families:
 `pitch_interval_reasoning` and `chord_roman_reasoning`. See
 `docs/music_reasoning_specification.md` for their modes and difficulty knobs.
+The pitch/interval family includes interval-size comparison tasks, where two
+intervals are equivalent exactly when their complete spans contain the same
+number of semitones.
 
 ## Notation Coverage
 

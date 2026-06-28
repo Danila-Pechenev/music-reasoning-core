@@ -125,8 +125,11 @@ such as `=F`.
 Scoring normalizes harmless surface variants while preserving musically
 relevant spelling. It accepts common accidental words such as `E-flat`, optional
 quotes around ABC note answers, `=B` and `B` as equivalent ABC natural-note
-answers, final periods, and whitespace variants. It does not treat `C#` and
-`Db` as equal unless the task itself asks for enharmonic equivalence.
+answers, final periods, whitespace variants, and conventional Roman-numeral
+aliases such as `V2/bVII` for `V42/VII` and `#iv°64` for `vii°64/V`. It does
+also accepts `third inversion 6/4/2` for `third inversion 4/2`, while still
+requiring spaces between words. It does not treat `C#` and `Db` as equal unless
+the task itself asks for enharmonic equivalence.
 
 Reasoning traces should read as natural music-theory reasoning. They may be
 generated using internal tools or third-party libraries, but they should not
@@ -171,7 +174,7 @@ These families are ordered for implementation: start with compact, strongly veri
 | `interval_arithmetic` | `Start with a major tenth, then reduce to a simple interval and invert it, then add a minor third. Answer with one interval name for the final result. Preserve both its interval number and chromatic size; enharmonic substitutes are distinct.` | `major seventh` |
 | `pitch_count` | `Under pitch-class equivalence, how many distinct pitch classes are in C4, C5, B#3, Db4, C#5, Ebb4? Notes are written in scientific pitch notation. The answer is one integer.` | `3` |
 | `interval_classification` | `In C harmonic minor, classify the ascending note-to-note relation Eb-B using one of these labels: diatonic consonance, diatonic dissonance, chromatic alteration. The answer is one label from that list.` | `diatonic dissonance` |
-| `enharmonic_interval_comparison` | `Are C#4-E4 and Db4-Fb4 enharmonically equivalent intervals? Notes are written in scientific pitch notation. The answer is exactly 'yes' or 'no'.` | `yes` |
+| `interval_size_comparison` | `Are C4-F#4 and D4-Ab4 interval-size equivalent, meaning that they span the same number of semitones? Notes are written in scientific pitch notation. The answer is exactly 'yes' or 'no'.` | `yes` |
 | `instrument_transposition` | `A B-flat clarinet part writes D5. What sounding pitch is produced? Notes are written in scientific pitch notation. Answer with one note name with octave in scientific pitch notation, preserving the diatonic spelling implied by the instrument's transposition interval; enharmonic substitutes are distinct.` | `C5` |
 | `interval_construction` | `Build a minor third below E. Notes are written in scientific pitch notation. Answer with one note name without octave in scientific pitch notation, preserving the theoretical spelling implied by the requested interval; enharmonic substitutes are distinct.` | `C#` |
 | `transposition_chain` | `Transpose F# up a minor third, down a perfect fifth, then up a major second. Notes are written in scientific pitch notation. Answer with one note name without octave in scientific pitch notation, preserving the theoretical spelling produced by the written interval sequence; enharmonic substitutes are distinct.` | `E` |
@@ -183,9 +186,9 @@ These families are ordered for implementation: start with compact, strongly veri
 | `chain_len` | Shared length knob for chain-like pitch/interval tasks. | `interval_arithmetic`, `transposition_chain` | one operation | longer composed operation chains such as add/subtract, reduce-then-invert, and transpose |
 | `max_accidental` | Accidental/quality complexity used when sampling notes and interval qualities; constructed results may still require the spelling implied by the operation. | all | sampled notes use naturals, sharps, flats; simple interval qualities | sample double accidentals, double-augmented/double-diminished intervals, and stricter spelling traps |
 | `key_complexity` | Maximum number of sharps/flats in analytical key signatures. | `interval_classification` | common keys up to two sharps/flats | expands to all conventional major/minor keys |
-| `max_interval_number` | Largest diatonic interval number allowed in generated intervals. | `interval_naming`, `interval_arithmetic`, `enharmonic_interval_comparison`, `interval_construction`, `transposition_chain` | simple intervals | compound intervals and wider registers |
+| `max_interval_number` | Largest diatonic interval number allowed in generated intervals. | `interval_naming`, `interval_arithmetic`, `interval_size_comparison`, `interval_construction`, `transposition_chain` | simple intervals | compound intervals and wider registers |
 | `n_candidates` | Number of note items in count-style instances. | `pitch_count` | short note list | longer note lists with more duplicates and distractors |
-| `p_abc` | Probability of rendering prompt notes in ABC notation instead of scientific pitch notation; note-answer modes use the matching answer notation policy. 70% of ABC cases use compact ABC note tokens and 30% use full ABC score fragments with randomly sampled common `L:`, `M:`, and `K:` headers. Full ABC interval pairs are rendered as bracketed harmonic intervals, and full-ABC note-answer modes ask for compact ABC answers with explicit accidentals. | `interval_naming`, `pitch_count`, `enharmonic_interval_comparison`, `instrument_transposition`, `interval_construction`, `transposition_chain` | SPN note names | more compact and full-score ABC input notation, plus compact ABC answers where applicable |
+| `p_abc` | Probability of rendering prompt notes in ABC notation instead of scientific pitch notation; note-answer modes use the matching answer notation policy. 70% of ABC cases use compact ABC note tokens and 30% use full ABC score fragments with randomly sampled common `L:`, `M:`, and `K:` headers. Full ABC interval pairs are rendered as bracketed harmonic intervals, and full-ABC note-answer modes ask for compact ABC answers with explicit accidentals. | `interval_naming`, `pitch_count`, `interval_size_comparison`, `instrument_transposition`, `interval_construction`, `transposition_chain` | SPN note names | more compact and full-score ABC input notation, plus compact ABC answers where applicable |
 
 **Config sketch**
 
@@ -223,6 +226,10 @@ class PitchIntervalConfig(Config):
   consonance, diatonic dissonance, or chromatic alteration. Perfect fourths are
   excluded because their consonance treatment depends on musical context that
   an isolated note pair does not provide.
+- `interval_size_comparison` treats two intervals as equivalent exactly when
+  their complete chromatic spans contain the same number of semitones. The
+  comparison does not reduce compound intervals to their simple forms and does
+  not require the intervals to share endpoint pitches or written names.
 - `instrument_transposition` uses a fixed table of common written-to-sounding
   transposing instruments, including clarinets, saxophones, horn, trumpet,
   guitar, and double bass. In this generator, each listed instrument sounds the
@@ -273,9 +280,9 @@ tests for independent cross-checks of pitch and interval behavior.
   dominant and secondary leading-tone functions to common non-tonic
   scale-degree targets.
 - `roman_numeral_from_chord` retains the full supported secondary-chord
-  vocabulary. Every secondary-analysis prompt includes its resolution chord so
-  the applied function is determined by harmonic context rather than by the
-  isolated source sonority alone.
+  vocabulary. Every secondary-analysis prompt explicitly identifies the source
+  as an applied chord tonicizing the supplied resolution chord, so the requested
+  functional analysis is unambiguous.
 - Where answer-choice order is not musically significant, choices are sampled
   in random order to increase surface diversity without changing the canonical
   answer.

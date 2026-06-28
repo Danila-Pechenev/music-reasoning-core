@@ -17,7 +17,7 @@ So far, **2 families are implemented**.
 
 | Implemented family | Short description |
 |---|---|
-| `pitch_interval_reasoning` | Generates pitch, interval, transposition, enharmonic-equivalence, pitch-class counting, and key-context interval-classification tasks. It focuses on exact spelling, octave/register handling, interval quality/number logic, and notation interpretation. |
+| `pitch_interval_reasoning` | Generates pitch, interval, transposition, interval-size comparison, pitch-class counting, and key-context interval-classification tasks. It focuses on exact spelling, octave/register handling, interval quality/number logic, and notation interpretation. |
 | `chord_roman_reasoning` | Generates chord quality, inversion, voicing, enharmonic chord equivalence, chromatic chord-label, diatonic membership, Roman-numeral analysis, and chord-realization tasks. It focuses on tertian chord structure, chord-tone order, figured bass, key context, and Roman-numeral function. |
 
 ## 2. Mode-Level Diversity Estimates
@@ -44,7 +44,7 @@ Counting convention:
 | `interval_arithmetic` | ~1,000,000,000+ | four-step chains; add/subtract/reduce-then-invert operations; interval qualities and compound interval numbers |
 | `pitch_count` | ~1,000,000,000,000,000,000,000+ | 9-note lists, pitch-class subsets, enharmonic spellings, octaves, order of notes, notation family and ABC key |
 | `interval_classification` | ~50,000-100,000 | major/natural-minor/harmonic-minor/melodic-minor contexts, all conventional key signatures, diatonic vs chromatic note pairs |
-| `enharmonic_interval_comparison` | ~800,000,000+ | two written intervals, yes/no cases, enharmonic endpoint spellings, compound sizes, octaves, notation family and ABC key |
+| `interval_size_comparison` | ~800,000,000+ | two written intervals, equal/different exact semitone spans, interval qualities and compound numbers, octaves, notation family and ABC key |
 | `instrument_transposition` | ~24,000+ | 12 common transposing instruments, written pitch spellings/octaves, SPN/compact ABC/full ABC, ABC key signatures |
 | `interval_construction` | ~500,000+ | start note, interval quality/number, above/below direction, answer-with-octave vs no-octave cases, notation family and ABC key |
 | `transposition_chain` | ~150,000,000,000+ | four transposition steps, each with direction and interval, accidental constraints, start note, notation family and ABC key |
