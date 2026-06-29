@@ -267,7 +267,6 @@ def _is_reusable_result(
     result: dict[str, Any],
     row: dict[str, Any],
     model: str,
-    provider: str | None,
     dataset_repo: str,
     dataset_config: str,
     dataset_commit: str,
@@ -279,7 +278,6 @@ def _is_reusable_result(
     return (
         result.get("status") == "ok"
         and result.get("model_requested") == model
-        and result.get("provider_requested") == provider
         and result.get("dataset_repo") == dataset_repo
         and result.get("dataset_config") == dataset_config
         and result.get("dataset_commit") == dataset_commit
@@ -1031,7 +1029,6 @@ def main() -> None:
                 latest_results.get(str(row["id"]), {}),
                 row,
                 model,
-                args.provider,
                 args.dataset_repo,
                 args.dataset_config,
                 dataset_commit,

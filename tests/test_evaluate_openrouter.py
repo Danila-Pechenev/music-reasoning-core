@@ -40,7 +40,7 @@ def test_parse_args_selects_dataset_configuration(monkeypatch, extra_args, expec
 
     assert args.dataset_config == expected_config
     assert args.provider is None
-    assert args.batch_size == 256
+    assert args.batch_size == 64
     assert args.seed == 0
     assert not hasattr(args, "concurrent_batches")
 
@@ -56,13 +56,12 @@ def test_parse_args_accepts_openrouter_provider_slug(monkeypatch):
     assert args.provider == "baidu"
 
 
-def test_result_directory_separates_max_token_budgets(tmp_path):
+def test_result_directory_separates_inference_configurations_without_provider(tmp_path):
     result_dir = evaluate_openrouter._result_directory(
         tmp_path,
         "openrouter/deepseek/deepseek-v4-flash",
         "v0.4.2",
         "n16",
-        "baidu",
         "high",
         8192,
         0,
@@ -73,7 +72,6 @@ def test_result_directory_separates_max_token_budgets(tmp_path):
         / "deepseek-deepseek-v4-flash"
         / "v0.4.2"
         / "n16"
-        / "provider-baidu"
         / "reasoning-high"
         / "max-tokens-8192"
         / "seed-0"
@@ -115,7 +113,7 @@ def test_load_benchmark_pins_configuration_to_exact_commit(monkeypatch):
     assert rows == [_benchmark_row()]
 
 
-def test_resume_requires_matching_dataset_configuration():
+def test_resume_requires_matching_dataset_configuration_but_not_provider():
     row = _benchmark_row()
     result = {
         "status": "ok",
@@ -136,7 +134,6 @@ def test_resume_requires_matching_dataset_configuration():
         result,
         row,
         "openrouter/provider/model",
-        None,
         "owner/benchmark",
         "n64",
         "abc123",
@@ -149,7 +146,6 @@ def test_resume_requires_matching_dataset_configuration():
         result,
         row,
         "openrouter/provider/model",
-        None,
         "owner/benchmark",
         "n16",
         "abc123",
@@ -158,11 +154,11 @@ def test_resume_requires_matching_dataset_configuration():
         1024,
         0,
     )
-    assert not evaluate_openrouter._is_reusable_result(
+    result["provider_requested"] = "baidu"
+    assert evaluate_openrouter._is_reusable_result(
         result,
         row,
         "openrouter/provider/model",
-        "baidu",
         "owner/benchmark",
         "n64",
         "abc123",
