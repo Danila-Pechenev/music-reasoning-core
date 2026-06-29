@@ -178,6 +178,26 @@ Benchmark exports append the following instruction to every prompt:
 This enforces compact evaluation responses. The instruction is benchmark-only;
 examples generated directly for training retain their original prompts.
 
+To upload the generated benchmark to Hugging Face, authenticate with the
+Hugging Face CLI, upload the generated directory, and tag the dataset release:
+
+```bash
+huggingface-cli login
+
+hf upload dpechenev/music-reasoning-benchmark \
+  benchmark_data/music_reasoning_benchmark \
+  . \
+  --repo-type dataset \
+  --commit-message "Publish music reasoning benchmark v0.4.3"
+
+hf repos tag create dpechenev/music-reasoning-benchmark v0.4.3 \
+  --repo-type dataset \
+  -m "Music reasoning benchmark v0.4.3"
+```
+
+Replace `dpechenev/music-reasoning-benchmark` and `v0.4.3` when publishing
+under another account or release version.
+
 ## Published Benchmark
 
 The generated benchmark is published on Hugging Face as
