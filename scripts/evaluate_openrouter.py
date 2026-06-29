@@ -106,7 +106,6 @@ def _result_directory(
     model: str,
     dataset_revision: str,
     dataset_config: str,
-    provider: str | None,
     reasoning_effort: str | None,
     max_tokens: int,
     seed: int,
@@ -118,8 +117,6 @@ def _result_directory(
         / _model_slug(dataset_revision)
         / _model_slug(dataset_config)
     )
-    if provider is not None:
-        output_dir /= f"provider-{_model_slug(provider)}"
     if reasoning_effort is not None:
         output_dir /= f"reasoning-{_model_slug(reasoning_effort)}"
     return output_dir / f"max-tokens-{max_tokens}" / f"seed-{seed}"
@@ -912,8 +909,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=256,
-        help="Prompts submitted in each sequential litlm batch. Defaults to 256.",
+        default=64,
+        help="Prompts submitted in each sequential litlm batch. Defaults to 64.",
     )
     parser.add_argument(
         "--seed",
@@ -1002,7 +999,6 @@ def main() -> None:
         model,
         dataset_revision,
         args.dataset_config,
-        args.provider,
         args.reasoning_effort,
         args.max_tokens,
         args.seed,
