@@ -40,8 +40,10 @@ DEFAULT_SPLIT_NAMES = {
 }
 DEFAULT_CONFIG_SIZES = (16, 32, 64, 128)
 DEFAULT_CONFIG_SIZE = 64
-DEFAULT_BENCHMARK_VERSION = "v0.4.2"
-BENCHMARK_RESPONSE_INSTRUCTION = "Return only the requested answer."
+DEFAULT_BENCHMARK_VERSION = "v0.4.3"
+BENCHMARK_RESPONSE_INSTRUCTION = (
+    "Return only the requested answer, without explanation or additional text."
+)
 
 
 def _jsonable(value: Any) -> Any:

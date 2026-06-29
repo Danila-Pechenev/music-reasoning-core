@@ -173,8 +173,9 @@ The script writes each configuration under `data/n<size>/`, plus a
 `summary.json` and a Hugging Face dataset card. Configurations are nested:
 `n16` is a deterministic subset of `n32`, then `n64`, then `n128`.
 
-Benchmark exports append `Return only the requested answer.` to every prompt
-to enforce compact evaluation responses. This instruction is benchmark-only;
+Benchmark exports append the following instruction to every prompt:
+`Return only the requested answer, without explanation or additional text.`
+This enforces compact evaluation responses. The instruction is benchmark-only;
 examples generated directly for training retain their original prompts.
 
 ## Published Benchmark

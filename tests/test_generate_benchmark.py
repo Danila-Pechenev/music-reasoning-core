@@ -71,6 +71,10 @@ def test_generate_benchmark_writes_nested_hugging_face_configurations(tmp_path, 
     assert len(large_rows) == 32
     assert len(large_rows_by_id) == len(large_rows)
     assert all(large_rows_by_id[row["id"]] == row for row in small_rows)
+    assert all(
+        row["prompt"].endswith(generate_benchmark.BENCHMARK_RESPONSE_INSTRUCTION)
+        for row in large_rows
+    )
 
     summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
     assert summary["default_config"] == "n1"
@@ -82,7 +86,7 @@ def test_generate_benchmark_writes_nested_hugging_face_configurations(tmp_path, 
     assert "task_categories:\n- question-answering" in dataset_card
     assert "- config_name: n1\n  default: true" in dataset_card
     assert "path: data/n2/easy.jsonl" in dataset_card
-    assert '"n1",\n    revision="v0.4.2"' in dataset_card
+    assert '"n1",\n    revision="v0.4.3"' in dataset_card
 
 
 def test_generate_benchmark_removes_stale_data_files(tmp_path, monkeypatch):
