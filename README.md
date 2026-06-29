@@ -284,9 +284,10 @@ benchmark_results/<model>/<version>/
           incorrect_responses.md
 ```
 
-The report contains aggregate metrics and recorded API benchmark time for each
-split. Every completed incorrect response is written separately to
-`incorrect_responses.md` for qualitative error analysis.
+The report contains aggregate metrics, empty-answer and token-exhaustion
+statistics, and recorded API benchmark time for each split. Every completed
+incorrect response is written separately to `incorrect_responses.md` for
+qualitative error analysis.
 
 Select another published benchmark release with `--revision`, for example:
 
@@ -325,8 +326,9 @@ python scripts/evaluate_openrouter.py deepseek/deepseek-v4-flash \
   --dataset-config n16
 ```
 
-The selected provider is recorded in `results.jsonl` and the generated reports,
-but it does not add a directory level because the evaluated model is unchanged.
+The selected provider is recorded in `results.jsonl`, but it does not appear in
+Markdown reports and does not add a directory level because the evaluated model
+is unchanged.
 
 Before launching a full run, an inexpensive smoke test is recommended:
 

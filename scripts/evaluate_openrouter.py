@@ -73,6 +73,9 @@ class Metrics:
     total: int = 0
     completed: int = 0
     correct: int = 0
+    empty_answers: int = 0
+    token_limit_exhausted: int = 0
+    other_empty_answers: int = 0
     api_errors: int = 0
     scoring_errors: int = 0
     prompt_tokens: int = 0
@@ -572,6 +575,16 @@ def _metrics(results: Iterable[dict[str, Any]]) -> Metrics:
         if status == "ok":
             metrics.completed += 1
             metrics.correct += int(_numeric(result.get("score")) >= 1.0)
+            prediction_is_empty = not str(result.get("prediction") or "").strip()
+            usage = result.get("usage") or {}
+            completion_tokens = int(_numeric(usage.get("completion_tokens")))
+            max_tokens = int(_numeric(result.get("max_tokens")))
+            exhausted_token_limit = max_tokens > 0 and completion_tokens >= max_tokens
+            metrics.empty_answers += int(prediction_is_empty)
+            metrics.token_limit_exhausted += int(exhausted_token_limit)
+            metrics.other_empty_answers += int(
+                prediction_is_empty and not exhausted_token_limit
+            )
         elif status == "api_error":
             metrics.api_errors += 1
         elif status == "scoring_error":
@@ -644,6 +657,8 @@ def _metric_row(label: str, metrics: Metrics) -> str:
     return (
         f"| {label} | {metrics.total} | {metrics.completed} | {metrics.correct} | "
         f"{_percentage(metrics.accuracy)} | {_percentage(metrics.completed_accuracy)} | "
+        f"{metrics.empty_answers} | {metrics.token_limit_exhausted} | "
+        f"{metrics.other_empty_answers} | "
         f"{metrics.api_errors} | {metrics.scoring_errors} | ${metrics.cost:.6f} |"
     )
 
@@ -663,8 +678,8 @@ def _metrics_table(
     ordered_keys: Sequence[tuple[str, ...]] | None = None,
 ) -> str:
     lines = [
-        "| Group | Total | Completed | Correct | Accuracy | Completed accuracy | API errors | Scoring errors | API cost |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Group | Total | Completed | Correct | Accuracy | Completed accuracy | Empty answers | Token limit exhausted | Other empty answers | API errors | Scoring errors | API cost |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
     ]
     keys = ordered_keys if ordered_keys is not None else sorted(groups)
     for key in keys:
@@ -700,8 +715,8 @@ def _split_report_lines(
     return [
         f"## {split_label} Split",
         "",
-        "| Scope | Total | Completed | Correct | Accuracy | Completed accuracy | API errors | Scoring errors | API cost |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Scope | Total | Completed | Correct | Accuracy | Completed accuracy | Empty answers | Token limit exhausted | Other empty answers | API errors | Scoring errors | API cost |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         _metric_row(f"{split_label} split", split_metrics),
         "",
         "### Results by Task Family",
@@ -720,7 +735,7 @@ def _split_report_lines(
         f"- Total tokens: `{split_metrics.total_tokens:,}`",
         f"- Reported API cost: `${split_metrics.cost:.6f}`",
         "",
-        "Usage and cost are summed from values returned by the provider. A provider may omit some fields.",
+        "Usage and cost are summed from values returned by OpenRouter. Some fields may be unavailable.",
     ]
 
 
@@ -754,8 +769,7 @@ def _write_report(
         "## Run Configuration",
         "",
         f"- **Model:** `{model.removeprefix('openrouter/')}`",
-        f"- **Provider routing:** `{provider or 'OpenRouter automatic routing'}`",
-        f"- **Reasoning effort:** `{reasoning_effort or 'provider default'}`",
+        f"- **Reasoning effort:** `{reasoning_effort or 'default'}`",
         f"- **Dataset:** [`{dataset_repo}`](https://huggingface.co/datasets/{dataset_repo})",
         f"- **Dataset configuration:** `{dataset_config}`",
         f"- **Dataset revision:** `{dataset_revision}`",
@@ -769,12 +783,14 @@ def _write_report(
         "",
         "## Results by Difficulty",
         "",
-        "| Split | Total | Completed | Correct | Accuracy | Completed accuracy | API errors | Scoring errors | API cost | Benchmark time |",
-        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
+        "| Split | Total | Completed | Correct | Accuracy | Completed accuracy | Empty answers | Token limit exhausted | Other empty answers | API errors | Scoring errors | API cost | Benchmark time |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|",
         *[
             (
                 f"| {split} | {metrics.total} | {metrics.completed} | {metrics.correct} | "
                 f"{_percentage(metrics.accuracy)} | {_percentage(metrics.completed_accuracy)} | "
+                f"{metrics.empty_answers} | {metrics.token_limit_exhausted} | "
+                f"{metrics.other_empty_answers} | "
                 f"{metrics.api_errors} | {metrics.scoring_errors} | ${metrics.cost:.6f} | "
                 f"{_format_duration(split_benchmark_seconds.get(split, 0.0))} |"
             )
@@ -784,6 +800,9 @@ def _write_report(
         "",
         "`Accuracy` uses all requested rows in each split as the denominator. "
         "`Completed accuracy` excludes API and scoring failures.",
+        "`Empty answers` are completed responses with blank predictions and count as incorrect. "
+        "`Token limit exhausted` counts completed responses that reached the configured completion-token limit; "
+        "`Other empty answers` counts blank predictions that did not reach that limit.",
         "",
     ]
     for split in splits:
@@ -824,8 +843,7 @@ def _write_incorrect_responses(
         "# Incorrect Responses",
         "",
         f"- **Model:** `{model.removeprefix('openrouter/')}`",
-        f"- **Provider routing:** `{provider or 'OpenRouter automatic routing'}`",
-        f"- **Reasoning effort:** `{reasoning_effort or 'provider default'}`",
+        f"- **Reasoning effort:** `{reasoning_effort or 'default'}`",
         f"- **API seed:** `{seed}`",
         f"- **Dataset:** [`{dataset_repo}`](https://huggingface.co/datasets/{dataset_repo})",
         f"- **Dataset configuration:** `{dataset_config}`",
@@ -1079,6 +1097,11 @@ def main() -> None:
         print(
             f"{split} accuracy: {_percentage(split_metrics.accuracy)} "
             f"({split_metrics.correct}/{split_metrics.total})"
+        )
+        print(
+            f"{split} empty answers: {split_metrics.empty_answers} "
+            f"({split_metrics.token_limit_exhausted} token-limit exhaustions; "
+            f"{split_metrics.other_empty_answers} other empty answers)"
         )
         print(f"{split} benchmark time: {_format_duration(split_benchmark_seconds[split])}")
 

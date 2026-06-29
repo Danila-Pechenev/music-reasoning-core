@@ -265,6 +265,38 @@ def test_recorded_benchmark_time_merges_overlapping_batch_intervals():
     assert evaluate_openrouter._recorded_benchmark_seconds(results) == 20.0
 
 
+def test_metrics_classifies_empty_answers_and_token_exhaustion():
+    results = [
+        {
+            "status": "ok",
+            "score": 0.0,
+            "prediction": "",
+            "max_tokens": 8192,
+            "usage": {"completion_tokens": 8192},
+        },
+        {
+            "status": "ok",
+            "score": 0.0,
+            "prediction": "   ",
+            "max_tokens": 8192,
+            "usage": {"completion_tokens": 300},
+        },
+        {
+            "status": "ok",
+            "score": 1.0,
+            "prediction": "major third",
+            "max_tokens": 8192,
+            "usage": {"completion_tokens": 8192},
+        },
+    ]
+
+    metrics = evaluate_openrouter._metrics(results)
+
+    assert metrics.empty_answers == 2
+    assert metrics.token_limit_exhausted == 2
+    assert metrics.other_empty_answers == 1
+
+
 def test_report_separates_aggregate_metrics_from_incorrect_responses(tmp_path):
     base_result = {
         "split": "easy",
@@ -342,7 +374,11 @@ def test_report_separates_aggregate_metrics_from_incorrect_responses(tmp_path):
     assert "Incorrect prompt" not in report
     assert "Provider failed" not in report
     assert "Sample Incorrect Responses" not in report
-    assert "Provider routing:** `baidu`" in report
+    assert "Empty answers" in report
+    assert "Token limit exhausted" in report
+    assert "Other empty answers" in report
+    assert "Provider routing" not in report
+    assert "provider default" not in report
     assert "API seed:** `0`" in report
 
     incorrect_report = incorrect_path.read_text(encoding="utf-8")
@@ -352,5 +388,6 @@ def test_report_separates_aggregate_metrics_from_incorrect_responses(tmp_path):
     assert "major second" in incorrect_report
     assert "right-id" not in incorrect_report
     assert "api-error-id" not in incorrect_report
-    assert "Provider routing:** `baidu`" in incorrect_report
+    assert "Provider routing" not in incorrect_report
+    assert "provider default" not in incorrect_report
     assert "API seed:** `0`" in incorrect_report
