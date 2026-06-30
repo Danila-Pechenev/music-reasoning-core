@@ -214,7 +214,7 @@ def _write_dataset_card(
     )
     path.write_text(
         f"""---
-pretty_name: Procedural Music Reasoning Benchmark
+pretty_name: Music Reasoning Core Benchmark
 license: mit
 language:
 - en
@@ -229,10 +229,10 @@ configs:
 {chr(10).join(config_blocks)}
 ---
 
-# Procedural Music Reasoning Benchmark
+# Music Reasoning Core Benchmark
 
 This benchmark was generated with
-[`Danila-Pechenev/procedural-music-reasoning`](https://github.com/Danila-Pechenev/procedural-music-reasoning).
+[`Danila-Pechenev/music-reasoning-core`](https://github.com/Danila-Pechenev/music-reasoning-core).
 
 Benchmark version: `{benchmark_version}`.
 Generator version: `{generator_version}`.

@@ -1,4 +1,4 @@
-# Procedural Music Reasoning Specification
+# Music Reasoning Core Specification
 
 This document is both the specification for implemented generators and a
 roadmap for planned music-reasoning task families. Sections 1 and 2 describe

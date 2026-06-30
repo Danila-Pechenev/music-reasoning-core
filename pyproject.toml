@@ -3,16 +3,17 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "procedural-music-reasoning"
+name = "music-reasoning-core"
 dynamic = ["version"]
 description = "Procedural generators for music reasoning benchmarks and training data"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Procedural Music Reasoning contributors" },
+    { name = "Music Reasoning Core contributors" },
 ]
 keywords = [
+    "music",
     "music-theory",
     "reasoning",
     "benchmarking",

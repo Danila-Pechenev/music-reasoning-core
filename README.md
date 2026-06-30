@@ -1,6 +1,6 @@
-# Procedural Music Reasoning
+# Music Reasoning Core
 
-Procedural generators for music-theory reasoning tasks aimed at language-model
+Procedural generators for symbolic music reasoning tasks aimed at language-model
 benchmarking, supervised fine-tuning, and reasoning-trace training.
 
 The project is designed as a companion package to
@@ -352,7 +352,7 @@ training or evaluation pools should be regenerated with
 ## Repository Layout
 
 ```text
-procedural-music-reasoning/
+music-reasoning-core/
   src/music_reasoning_tasks/
     _music_theory.py
     pitch_interval_reasoning.py
