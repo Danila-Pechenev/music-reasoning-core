@@ -17,7 +17,7 @@ from reasoning_core.template import Problem
 from music_reasoning_tasks.chord_roman_reasoning import ChordRomanReasoning
 from music_reasoning_tasks.pitch_interval_reasoning import PitchIntervalReasoning
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 TASK_CLASSES = {
     "pitch_interval_reasoning": PitchIntervalReasoning,

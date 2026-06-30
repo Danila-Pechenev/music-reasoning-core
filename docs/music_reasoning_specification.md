@@ -173,7 +173,7 @@ These families are ordered for implementation: start with compact, strongly veri
 
 | Mode | Prompt example | Answer |
 |---|---|---|
-| `interval_naming` | `Name the interval from F#3 to A4. Notes are written in scientific pitch notation. Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.` | `minor tenth` |
+| `interval_naming` | `Name the interval from F#3 to A4. Notes are written in scientific pitch notation. Give one interval name, for example, perfect fourth or minor tenth. Enharmonically equivalent interval names are distinct.` | `minor tenth` |
 | `interval_arithmetic` | `Use interval subtraction to take a perfect octave away from an augmented octave. Answer format: one interval name for the final result, for example, major sixth or diminished tenth. Preserve the theoretical interval spelling; enharmonically equivalent interval names are distinct.` | `augmented unison` |
 | `pitch_count` | `Under pitch-class equivalence, how many distinct pitch classes are in C4, C5, B#3, Db4, C#5, Ebb4? Notes are written in scientific pitch notation. The answer is one integer.` | `3` |
 | `interval_classification` | `In C harmonic minor, classify the ascending note-to-note relation Eb-B using one of these labels: diatonic consonance, diatonic dissonance, chromatic alteration. The answer is one label from that list.` | `diatonic dissonance` |

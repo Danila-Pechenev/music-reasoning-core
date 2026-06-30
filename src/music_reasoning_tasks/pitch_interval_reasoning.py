@@ -82,11 +82,11 @@ INTERVAL_NAME_SCORE_OPENERS = (
     "Identify the interval between the two notated pitches in this ABC score fragment:\n{score}",
 )
 INTERVAL_NAME_TAILS = (
-    "Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.",
-    "Give one interval name, for example, perfect fourth or minor tenth, preserving the written interval number rather than reducing compound intervals to simple ones. Enharmonically equivalent interval names are distinct.",
-    "Answer with one interval name, for example, major seventh or augmented eleventh, preserving the written simple or compound interval number and treating enharmonically equivalent interval names as distinct.",
-    "The expected answer is one interval name, for example, diminished fifth or perfect fifteenth, with the written interval number preserved; enharmonically equivalent interval names are distinct.",
-    "Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.",
+    "Answer format: one interval name, for example, minor third or double-augmented eleventh. Enharmonically equivalent interval names are distinct.",
+    "Give one interval name, for example, perfect fourth or minor tenth. Enharmonically equivalent interval names are distinct.",
+    "Answer with one interval name, for example, major seventh or augmented eleventh. Enharmonically equivalent interval names are distinct.",
+    "The expected answer is one interval name, for example, diminished fifth or perfect fifteenth. Enharmonically equivalent interval names are distinct.",
+    "Provide one interval name, for example, minor sixth or double-diminished twelfth. Enharmonically equivalent interval names are distinct.",
 )
 INTERVAL_ARITHMETIC_SINGLE_OPENERS = {
     "add": (

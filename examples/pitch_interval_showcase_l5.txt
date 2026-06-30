@@ -9,7 +9,7 @@ L:1/4
 M:none
 K:Dm
   [__C__B] |] %1
-Interpret the score using its key signature. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.
+Interpret the score using its key signature. Provide one interval name, for example, minor sixth or double-diminished twelfth. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
 major seventh
@@ -26,7 +26,7 @@ So the interval is a major seventh.
 TASK 02 | mode=interval_naming | style=compact_abc
 --------------------------------------------------------------------------------
 PROMPT:
-Name the ascending interval whose endpoints are "^^g" and "^d''". Notes are written in compact ABC notation. Answer format: one interval name, for example, minor third or double-augmented eleventh; preserve the written interval number, including whether it is simple or compound. Enharmonically equivalent interval names are distinct.
+Name the ascending interval whose endpoints are "^^g" and "^d''". Notes are written in compact ABC notation. Answer format: one interval name, for example, minor third or double-augmented eleventh. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
 diminished twelfth
@@ -41,7 +41,7 @@ So the interval is a diminished twelfth.
 TASK 03 | mode=interval_naming | style=spn
 --------------------------------------------------------------------------------
 PROMPT:
-What interval goes from D##5 to A##6? Notes are written in scientific pitch notation. Provide one interval name, for example, minor sixth or double-diminished twelfth, using the simple or compound number shown by the written notes. Enharmonically equivalent interval names are distinct.
+What interval goes from D##5 to A##6? Notes are written in scientific pitch notation. Provide one interval name, for example, minor sixth or double-diminished twelfth. Enharmonically equivalent interval names are distinct.
 
 ANSWER:
 perfect twelfth
